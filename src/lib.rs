@@ -1,6 +1,6 @@
 mod config;
 
-use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR};
+use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_THRUST, SHIP_ROTATION};
 
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 
@@ -10,7 +10,7 @@ impl Plugin for AsteroidPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, (spawn_camera, spawn_player))
             .insert_resource(ClearColor(BACKGROUND_COLOR))
-            .add_systems(FixedUpdate, input_ship_thruster)
+            .add_systems(FixedUpdate, (input_ship_thruster, input_ship_rotation))
             // .add_systems(FixedUpdate, input_ship_rotation);
             .add_systems(FixedPostUpdate, (integrate_velocity, update_positions));
     }
@@ -23,7 +23,7 @@ struct Position(bevy::math::Vec2);
 struct Velocity(bevy::math::Vec2);
 
 #[derive(Component)]
-struct Rotation(bevy::prelude::Quat);
+struct Rotation(f32);
 
 #[derive(Component)]
 struct Ship;
@@ -41,6 +41,7 @@ fn spawn_player(
         Ship,
         Position(Vec2::default()),
         Velocity(Vec2::ZERO),
+        Rotation(0.0),
         MaterialMesh2dBundle {
             mesh: meshes.add(Circle::new(10.0)).into(),
             material: materials.add(PLAYER_SHIP_COLOR),
@@ -55,15 +56,15 @@ fn spawn_player(
 */
 fn input_ship_thruster(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<&mut Velocity, With<Ship>>,
+    mut query: Query<(&mut Velocity, &Rotation), With<Ship>>,
 ) {
-    let Ok(mut velocity) = query.get_single_mut() else {
+    let Ok((mut velocity, rotation)) = query.get_single_mut() else {
         let count = query.iter().count();
-        panic!("There should be exactly one player ship! Instead, there seem to be {count}.");
+        panic!("There should be exactly one player ship! Instead, there seems to be {count}.");
     };
 
     if keyboard_input.pressed(KeyCode::KeyW) {
-        velocity.0 += Vec2::new(10.0, 0.0);
+        velocity.0 += Vec2::from_angle(rotation.0) * SHIP_THRUST;
     }
 }
 
@@ -74,7 +75,16 @@ fn input_ship_rotation(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut query: Query<&mut Rotation, With<Ship>>,
 ) {
-    todo!();
+    let Ok(mut rotation) = query.get_single_mut() else {
+        let count = query.iter().count();
+        panic!("There should be exactly one player ship! Instead, there seems to be {count}.");
+    };
+
+    if keyboard_input.pressed(KeyCode::KeyA) {
+        rotation.0 += SHIP_ROTATION;
+    } else if keyboard_input.pressed(KeyCode::KeyD) {
+        rotation.0 -= SHIP_ROTATION;
+    }
 }
 
 /*
