@@ -11,8 +11,11 @@ impl Plugin for AsteroidPlugin {
         app.add_systems(Startup, (spawn_camera, spawn_player))
             .insert_resource(ClearColor(BACKGROUND_COLOR))
             .add_systems(FixedUpdate, (input_ship_thruster, input_ship_rotation))
-            // .add_systems(FixedUpdate, input_ship_rotation);
-            .add_systems(FixedPostUpdate, (integrate_velocity, update_positions));
+            .add_systems(FixedPostUpdate, (
+                integrate_velocity,
+                update_positions,
+                apply_rotation_to_mesh,
+            ));
     }
 }
 
@@ -43,7 +46,11 @@ fn spawn_player(
         Velocity(Vec2::ZERO),
         Rotation(0.0),
         MaterialMesh2dBundle {
-            mesh: meshes.add(Circle::new(10.0)).into(),
+            mesh: meshes.add(Triangle2d::new(
+                Vec2::new( 0.5, 0.0) * 20.0,
+                Vec2::new(-0.5, 0.25) * 20.0,
+                Vec2::new(-0.5, -0.25) * 20.0
+            )).into(),
             material: materials.add(PLAYER_SHIP_COLOR),
             transform: Transform::default(),
             ..default()
@@ -69,7 +76,8 @@ fn input_ship_thruster(
 }
 
 /*
- Checks if "A" or "D" is pressed and rotates the ship accordingly
+ Checks if "A" or "D" is pressed and updates the player's Rotation component accordingly
+ Does *not* rotate the graphical widget! (that's done by the `apply_rotation_to_mesh` system)
 */
 fn input_ship_rotation(
     keyboard_input: Res<ButtonInput<KeyCode>>,
@@ -100,5 +108,14 @@ fn update_positions(mut query: Query<(&mut Transform, &Position)>) {
     for (mut transform, position) in &mut query {
         transform.translation.x = position.0.x;
         transform.translation.y = position.0.y;
+    }
+}
+
+/*
+ Assigns the rotation to the transform by copying it from the Rotation component.
+*/
+fn apply_rotation_to_mesh(mut query: Query<(&mut Transform, &Rotation)>) {
+    for (mut transform, rotation) in &mut query {
+        transform.rotation = Quat::from_rotation_z(rotation.0);
     }
 }
