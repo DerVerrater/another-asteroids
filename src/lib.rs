@@ -3,6 +3,7 @@ mod config;
 use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_THRUST, SHIP_ROTATION};
 
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
+use config::{SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE};
 
 pub struct AsteroidPlugin;
 
@@ -31,6 +32,12 @@ struct Rotation(f32);
 #[derive(Component)]
 struct Ship;
 
+// Data component to store color properties attached to an entity
+// This was easier (and imo better) than holding global consts with
+// UUID assets.
+#[derive(Component)]
+struct ThrusterColors(Handle<ColorMaterial>, Handle<ColorMaterial>);
+
 fn spawn_camera(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
 }
@@ -40,22 +47,45 @@ fn spawn_player(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    commands.spawn((
+    let triangle = Triangle2d::new(
+        Vec2::new( 0.5, 0.0),
+        Vec2::new(-0.5, 0.45),
+        Vec2::new(-0.5, -0.45)
+    );
+    let thruster_firing_id = materials.add(SHIP_THRUSTER_COLOR_ACTIVE);
+    let thruster_stopped_id = materials.add(SHIP_THRUSTER_COLOR_INACTIVE);
+
+    let ship_mesh = MaterialMesh2dBundle {
+        mesh: meshes.add(triangle).into(),
+        material: materials.add(PLAYER_SHIP_COLOR),
+        transform: Transform::default().with_scale(Vec3::new(20.0, 20.0, 20.0)),
+        ..default()
+    };
+
+    let thruster_mesh = MaterialMesh2dBundle {
+        mesh: meshes.add(triangle).into(),
+        material: materials.add(PLAYER_SHIP_COLOR),
+        transform: Transform::default()
+            .with_scale(Vec3::splat(0.5))
+            .with_translation(Vec3::new(-0.5, 0.0, 0.0)),
+        ..default()
+    };
+
+    let thruster = commands.spawn(thruster_mesh).id();
+
+    let mut ship_id = commands.spawn((
         Ship,
         Position(Vec2::default()),
         Velocity(Vec2::ZERO),
         Rotation(0.0),
-        MaterialMesh2dBundle {
-            mesh: meshes.add(Triangle2d::new(
-                Vec2::new( 0.5, 0.0) * 20.0,
-                Vec2::new(-0.5, 0.25) * 20.0,
-                Vec2::new(-0.5, -0.25) * 20.0
-            )).into(),
-            material: materials.add(PLAYER_SHIP_COLOR),
-            transform: Transform::default(),
-            ..default()
-        },
+        ship_mesh,
+        ThrusterColors(
+            thruster_firing_id,
+            thruster_stopped_id
+        )
     ));
+
+    ship_id.add_child(thruster);
 }
 
 /*
@@ -63,15 +93,21 @@ fn spawn_player(
 */
 fn input_ship_thruster(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<(&mut Velocity, &Rotation), With<Ship>>,
+    mut query: Query<(&mut Velocity, &Rotation, &mut Children, &ThrusterColors), With<Ship>>,
+    mut commands: Commands,
 ) {
-    let Ok((mut velocity, rotation)) = query.get_single_mut() else {
+    let Ok((mut velocity, rotation, children, colors)) = query.get_single_mut() else {
         let count = query.iter().count();
         panic!("There should be exactly one player ship! Instead, there seems to be {count}.");
     };
 
+    let thrusters = children.first().expect("Couldn't find first child, which should be the thruster");
+
     if keyboard_input.pressed(KeyCode::KeyW) {
         velocity.0 += Vec2::from_angle(rotation.0) * SHIP_THRUST;
+        commands.entity(*thrusters).insert(colors.0.clone());
+    } else {
+        commands.entity(*thrusters).insert(colors.1.clone());
     }
 }
 
