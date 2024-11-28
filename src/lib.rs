@@ -1,6 +1,6 @@
-mod config;
+pub mod config;
 
-use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST};
+use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST, WINDOW_SIZE};
 
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use config::{SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE};
@@ -11,6 +11,10 @@ impl Plugin for AsteroidPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, (spawn_camera, spawn_player))
             .insert_resource(ClearColor(BACKGROUND_COLOR))
+            .insert_resource(WorldSize {
+                width: WINDOW_SIZE.x,
+                height: WINDOW_SIZE.y,
+            })
             .add_systems(FixedUpdate, (input_ship_thruster, input_ship_rotation))
             .add_systems(
                 FixedPostUpdate,
@@ -36,6 +40,12 @@ struct Ship;
 // UUID assets.
 #[derive(Component)]
 struct ThrusterColors(Handle<ColorMaterial>, Handle<ColorMaterial>);
+
+#[derive(Resource)]
+struct WorldSize {
+    width: f32,
+    height: f32,
+}
 
 fn spawn_camera(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());

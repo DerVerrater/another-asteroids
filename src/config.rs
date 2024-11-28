@@ -5,6 +5,8 @@ where ever they happen to be needed, I'm concentrating them here.
 
 use bevy::color::Color;
 
+pub const WINDOW_SIZE: bevy::prelude::Vec2 = bevy::prelude::Vec2::new(800.0, 600.0);
+
 pub(crate) const BACKGROUND_COLOR: Color = Color::srgb(0.3, 0.3, 0.3);
 pub(crate) const PLAYER_SHIP_COLOR: Color = Color::srgb(1.0, 1.0, 1.0);
 pub(crate) const SHIP_THRUSTER_COLOR_ACTIVE: Color = Color::srgb(1.0, 0.2, 0.2);
