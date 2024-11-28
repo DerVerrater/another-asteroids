@@ -1,6 +1,6 @@
 mod config;
 
-use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_THRUST, SHIP_ROTATION};
+use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST};
 
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use config::{SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE};
@@ -12,11 +12,10 @@ impl Plugin for AsteroidPlugin {
         app.add_systems(Startup, (spawn_camera, spawn_player))
             .insert_resource(ClearColor(BACKGROUND_COLOR))
             .add_systems(FixedUpdate, (input_ship_thruster, input_ship_rotation))
-            .add_systems(FixedPostUpdate, (
-                integrate_velocity,
-                update_positions,
-                apply_rotation_to_mesh,
-            ));
+            .add_systems(
+                FixedPostUpdate,
+                (integrate_velocity, update_positions, apply_rotation_to_mesh),
+            );
     }
 }
 
@@ -48,9 +47,9 @@ fn spawn_player(
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     let triangle = Triangle2d::new(
-        Vec2::new( 0.5, 0.0),
+        Vec2::new(0.5, 0.0),
         Vec2::new(-0.5, 0.45),
-        Vec2::new(-0.5, -0.45)
+        Vec2::new(-0.5, -0.45),
     );
     let thruster_firing_id = materials.add(SHIP_THRUSTER_COLOR_ACTIVE);
     let thruster_stopped_id = materials.add(SHIP_THRUSTER_COLOR_INACTIVE);
@@ -79,10 +78,7 @@ fn spawn_player(
         Velocity(Vec2::ZERO),
         Rotation(0.0),
         ship_mesh,
-        ThrusterColors(
-            thruster_firing_id,
-            thruster_stopped_id
-        )
+        ThrusterColors(thruster_firing_id, thruster_stopped_id),
     ));
 
     ship_id.add_child(thruster);
@@ -101,7 +97,9 @@ fn input_ship_thruster(
         panic!("There should be exactly one player ship! Instead, there seems to be {count}.");
     };
 
-    let thrusters = children.first().expect("Couldn't find first child, which should be the thruster");
+    let thrusters = children
+        .first()
+        .expect("Couldn't find first child, which should be the thruster");
 
     if keyboard_input.pressed(KeyCode::KeyW) {
         velocity.0 += Vec2::from_angle(rotation.0) * SHIP_THRUST;
