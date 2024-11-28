@@ -9,20 +9,25 @@ pub struct AsteroidPlugin;
 
 impl Plugin for AsteroidPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, (spawn_camera, spawn_player))
-            .insert_resource(ClearColor(BACKGROUND_COLOR))
-            .insert_resource(WorldSize {
-                width: WINDOW_SIZE.x,
-                height: WINDOW_SIZE.y,
-            })
-            .add_systems(
-                FixedUpdate,
-                (input_ship_thruster, input_ship_rotation, wrap_entities),
-            )
-            .add_systems(
-                FixedPostUpdate,
-                (integrate_velocity, update_positions, apply_rotation_to_mesh),
-            );
+        app.add_systems(
+            Startup,
+            (spawn_camera, spawn_player, spawn_ui),
+        )
+        .insert_resource(ClearColor(BACKGROUND_COLOR))
+        .insert_resource(WorldSize {
+            width: WINDOW_SIZE.x,
+            height: WINDOW_SIZE.y,
+        })
+        .insert_resource(Lives(3))
+        .insert_resource(Score(0))
+        .add_systems(
+            FixedUpdate,
+            (input_ship_thruster, input_ship_rotation, wrap_entities),
+        )
+        .add_systems(
+            FixedPostUpdate,
+            (integrate_velocity, update_positions, apply_rotation_to_mesh),
+        );
     }
 }
 
@@ -43,6 +48,24 @@ struct Ship;
 // UUID assets.
 #[derive(Component)]
 struct ThrusterColors(Handle<ColorMaterial>, Handle<ColorMaterial>);
+
+#[derive(Resource, Debug, Deref, Clone, Copy)]
+struct Score(i32);
+
+impl From<Score> for String {
+    fn from(value: Score) -> Self {
+        value.to_string()
+    }
+}
+
+#[derive(Resource, Debug, Deref, Clone, Copy)]
+struct Lives(i32);
+
+impl From<Lives> for String {
+    fn from(value: Lives) -> Self {
+        value.to_string()
+    }
+}
 
 #[derive(Resource)]
 struct WorldSize {
@@ -186,4 +209,37 @@ fn wrap_entities(mut query: Query<&mut Position>, world_size: Res<WorldSize>) {
             pos.0.y = top;
         }
     }
+}
+
+fn spawn_ui(mut commands: Commands, score: Res<Score>, lives: Res<Lives>) {
+    commands.spawn(TextBundle::from_sections([
+        TextSection::new(
+            "Score: ",
+            TextStyle {
+                font_size: 25.0,
+                ..default()
+            },
+        ),
+        TextSection::new(
+            *score,
+            TextStyle {
+                font_size: 25.0,
+                ..default()
+            },
+        ),
+        TextSection::new(
+            " | Lives: ",
+            TextStyle {
+                font_size: 25.0,
+                ..default()
+            },
+        ),
+        TextSection::new(
+            *lives,
+            TextStyle {
+                font_size: 25.0,
+                ..default()
+            },
+        )
+    ]));
 }
