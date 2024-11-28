@@ -66,7 +66,7 @@ fn spawn_player(
         material: materials.add(PLAYER_SHIP_COLOR),
         transform: Transform::default()
             .with_scale(Vec3::splat(0.5))
-            .with_translation(Vec3::new(-0.5, 0.0, 0.0)),
+            .with_translation(Vec3::new(-0.5, 0.0, -0.1)),
         ..default()
     };
 
