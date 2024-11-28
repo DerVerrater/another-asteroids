@@ -15,7 +15,10 @@ impl Plugin for AsteroidPlugin {
                 width: WINDOW_SIZE.x,
                 height: WINDOW_SIZE.y,
             })
-            .add_systems(FixedUpdate, (input_ship_thruster, input_ship_rotation))
+            .add_systems(
+                FixedUpdate,
+                (input_ship_thruster, input_ship_rotation, wrap_entities),
+            )
             .add_systems(
                 FixedPostUpdate,
                 (integrate_velocity, update_positions, apply_rotation_to_mesh),
@@ -161,5 +164,26 @@ fn update_positions(mut query: Query<(&mut Transform, &Position)>) {
 fn apply_rotation_to_mesh(mut query: Query<(&mut Transform, &Rotation)>) {
     for (mut transform, rotation) in &mut query {
         transform.rotation = Quat::from_rotation_z(rotation.0);
+    }
+}
+
+fn wrap_entities(mut query: Query<&mut Position>, world_size: Res<WorldSize>) {
+    let right = world_size.width / 2.0;
+    let left = -right;
+    let top = world_size.height / 2.0;
+    let bottom = -top;
+
+    for mut pos in query.iter_mut() {
+        if pos.0.x > right {
+            pos.0.x = left;
+        } else if pos.0.x < left {
+            pos.0.x = right;
+        }
+
+        if pos.0.y > top {
+            pos.0.y = bottom;
+        } else if pos.0.y < bottom {
+            pos.0.y = top;
+        }
     }
 }
