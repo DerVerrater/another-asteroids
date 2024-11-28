@@ -1,0 +1,46 @@
+permissions:
+  contents: read
+on:
+  push:
+    branches: [trunk]
+  pull_request:
+name: Basic checks
+jobs:
+  stable-build-lint-test:
+    runs-on: ubuntu-latest
+    name: Basic build-and-test supertask
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install Rust Stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt clippy
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libasound2-dev libudev-dev
+      - name : cargo generate-lockfile
+        if: hashFiles('Cargo.lock') == ''
+        run: cargo generate-lockfile
+      - name: cargo fmt --check
+        run: cargo fmt --check
+      - name: cargo check
+        id: cargo_check
+        run: cargo check --locked
+      - name: cargo build
+        id: cargo_build
+        if: steps.cargo_check.outcome == 'success'
+        run: cargo build --locked --release
+      - name: cargo test
+        id: cargo_test
+        if: steps.cargo_build.outcome == 'success'
+        run: cargo test --locked --release
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: roberts-bad-asteroids-game
+          path: target/release/asteroids
+          if-no-files-found: 'error'
+          retention-days: 1
+          compression-level: 9
+          overwrite: true 
