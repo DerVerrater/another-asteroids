@@ -11,7 +11,7 @@ impl Plugin for AsteroidPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Startup,
-            (spawn_camera, spawn_player, spawn_ui),
+            (spawn_camera, spawn_player, spawn_ui, start_screen),
         )
         .insert_resource(ClearColor(BACKGROUND_COLOR))
         .insert_resource(WorldSize {
@@ -72,6 +72,11 @@ struct WorldSize {
     width: f32,
     height: f32,
 }
+
+// Marker component for the title screen UI entity.
+// This way, a query for the TitleUI can be used to despawn the title screen
+#[derive(Component)]
+struct TitleUI;
 
 fn spawn_camera(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
@@ -242,4 +247,27 @@ fn spawn_ui(mut commands: Commands, score: Res<Score>, lives: Res<Lives>) {
             },
         )
     ]));
+}
+
+fn start_screen(mut commands: Commands) {
+    commands.spawn((
+        TitleUI,
+        TextBundle::from_sections([
+            TextSection::new(
+                "Robert's Bad Asteroids Game",
+                TextStyle {
+                    font_size: 50.0,
+                    ..default()
+                },
+            ),
+            TextSection::new(
+                "Press space to begin",
+                TextStyle {
+                    font_size: 40.0,
+                    ..default()
+                },
+            ),
+        ])
+        .with_text_justify(bevy::text::JustifyText::Center),
+    ));
 }
