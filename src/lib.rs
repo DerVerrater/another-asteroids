@@ -9,29 +9,25 @@ pub struct AsteroidPlugin;
 
 impl Plugin for AsteroidPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
-            Startup,
-            (spawn_camera, spawn_player, spawn_ui),
-        )
-        .insert_resource(ClearColor(BACKGROUND_COLOR))
-        .insert_resource(WorldSize {
-            width: WINDOW_SIZE.x,
-            height: WINDOW_SIZE.y,
-        })
-        .insert_resource(Lives(3))
-        .insert_resource(Score(0))
-        .add_systems(
-            FixedUpdate,
-            (input_ship_thruster, input_ship_rotation, wrap_entities).run_if(in_state(GameState::Playing)),
-        )
-        .add_systems(
-            FixedPostUpdate,
-            (integrate_velocity, update_positions, apply_rotation_to_mesh).run_if(in_state(GameState::Playing)),
-        )
-        .add_systems(
-            OnEnter(GameState::TitleScreen),
-            start_screen
-        );
+        app.add_systems(Startup, (spawn_camera, spawn_player, spawn_ui))
+            .insert_resource(ClearColor(BACKGROUND_COLOR))
+            .insert_resource(WorldSize {
+                width: WINDOW_SIZE.x,
+                height: WINDOW_SIZE.y,
+            })
+            .insert_resource(Lives(3))
+            .insert_resource(Score(0))
+            .add_systems(
+                FixedUpdate,
+                (input_ship_thruster, input_ship_rotation, wrap_entities)
+                    .run_if(in_state(GameState::Playing)),
+            )
+            .add_systems(
+                FixedPostUpdate,
+                (integrate_velocity, update_positions, apply_rotation_to_mesh)
+                    .run_if(in_state(GameState::Playing)),
+            )
+            .add_systems(OnEnter(GameState::TitleScreen), start_screen);
 
         app.insert_state(GameState::TitleScreen);
     }
@@ -39,10 +35,10 @@ impl Plugin for AsteroidPlugin {
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, States)]
 enum GameState {
-    TitleScreen,    // Program is started. Present title screen and await user start
-    GetReady,       // Short timer to let the player get ready after pressing start
-    Playing,        // Player has started the game. Run the main loop
-    GameOver,       // Game has ended. Present game over dialogue and await user restart
+    TitleScreen, // Program is started. Present title screen and await user start
+    GetReady,    // Short timer to let the player get ready after pressing start
+    Playing,     // Player has started the game. Run the main loop
+    GameOver,    // Game has ended. Present game over dialogue and await user restart
 }
 
 #[derive(Component)]
@@ -259,7 +255,7 @@ fn spawn_ui(mut commands: Commands, score: Res<Score>, lives: Res<Lives>) {
                 font_size: 25.0,
                 ..default()
             },
-        )
+        ),
     ]));
 }
 
