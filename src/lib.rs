@@ -229,36 +229,10 @@ fn wrap_entities(mut query: Query<&mut Position>, world_size: Res<WorldSize>) {
 }
 
 fn spawn_ui(mut commands: Commands, score: Res<Score>, lives: Res<Lives>) {
-    commands.spawn(TextBundle::from_sections([
-        TextSection::new(
-            "Score: ",
-            TextStyle {
-                font_size: 25.0,
-                ..default()
-            },
-        ),
-        TextSection::new(
-            *score,
-            TextStyle {
-                font_size: 25.0,
-                ..default()
-            },
-        ),
-        TextSection::new(
-            " | Lives: ",
-            TextStyle {
-                font_size: 25.0,
-                ..default()
-            },
-        ),
-        TextSection::new(
-            *lives,
-            TextStyle {
-                font_size: 25.0,
-                ..default()
-            },
-        ),
-    ]));
+    commands.spawn((
+        Text::new(format!("Score: {score:?} | Lives: {lives:?}")),
+        TextFont::from_font_size(25.0),
+    ));
 }
 
 fn start_screen(mut commands: Commands) {
