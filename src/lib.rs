@@ -185,7 +185,7 @@ fn input_ship_rotation(
 */
 fn integrate_velocity(mut query: Query<(&mut Position, &Velocity)>, time: Res<Time>) {
     for (mut position, velocity) in &mut query {
-        position.0 += velocity.0 * time.delta_seconds();
+        position.0 += velocity.0 * time.delta_secs();
     }
 }
 
