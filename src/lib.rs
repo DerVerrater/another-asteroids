@@ -238,22 +238,18 @@ fn spawn_ui(mut commands: Commands, score: Res<Score>, lives: Res<Lives>) {
 fn start_screen(mut commands: Commands) {
     commands.spawn((
         TitleUI,
-        TextBundle::from_sections([
-            TextSection::new(
-                "Robert's Bad Asteroids Game",
-                TextStyle {
-                    font_size: 50.0,
-                    ..default()
-                },
-            ),
-            TextSection::new(
-                "Press space to begin",
-                TextStyle {
-                    font_size: 40.0,
-                    ..default()
-                },
-            ),
-        ])
-        .with_text_justify(bevy::text::JustifyText::Center),
-    ));
+        Node {
+            flex_direction: FlexDirection::Column,
+            ..Default::default()
+        },
+    )).with_children(|cmds| {
+        cmds.spawn((
+        Text::new("Robert's Bad Asteroids Game"),
+        TextFont::from_font_size(50.0),
+        ));
+        cmds.spawn((
+            Text::new("Press space to begin"),
+            TextFont::from_font_size(40.0),
+        ));
+    });
 }
