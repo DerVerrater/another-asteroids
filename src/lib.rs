@@ -2,7 +2,7 @@ pub mod config;
 
 use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST, WINDOW_SIZE};
 
-use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
+use bevy::prelude::*;
 use config::{SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE};
 
 pub struct AsteroidPlugin;
@@ -106,32 +106,27 @@ fn spawn_player(
     let thruster_stopped_id = materials.add(SHIP_THRUSTER_COLOR_INACTIVE);
 
     let ship_material = materials.add(PLAYER_SHIP_COLOR);
-    let ship_mesh = MaterialMesh2dBundle {
-        mesh: meshes.add(triangle).into(),
-        material: MeshMaterial2d(ship_material),
-        transform: Transform::default().with_scale(Vec3::new(20.0, 20.0, 20.0)),
-        ..default()
-    };
+    let ship_mesh = meshes.add(triangle);
 
     let thruster_material = materials.add(PLAYER_SHIP_COLOR);
-    let thruster_mesh = MaterialMesh2dBundle {
-        mesh: meshes.add(triangle).into(),
-        material: MeshMaterial2d(thruster_material),
-        transform: Transform::default()
-            .with_scale(Vec3::splat(0.5))
-            .with_translation(Vec3::new(-0.5, 0.0, -0.1)),
-        ..default()
-    };
+    let thruster_mesh = meshes.add(triangle);
 
     commands.spawn((
         Ship,
         Position(Vec2::default()),
         Velocity(Vec2::ZERO),
         Rotation(0.0),
-        ship_mesh,
+        Mesh2d(ship_mesh),
+        MeshMaterial2d(ship_material),
         ThrusterColors(thruster_firing_id, thruster_stopped_id),
-    )).with_child(thruster_mesh);
-
+        Transform::default().with_scale(Vec3::new(20.0, 20.0, 20.0)),
+    )).with_child((
+        Mesh2d(thruster_mesh),
+        MeshMaterial2d(thruster_material),
+        Transform::default()
+            .with_scale(Vec3::splat(0.5))
+            .with_translation(Vec3::new(-0.5, 0.0, -0.1)),
+    ));
 }
 
 /*
