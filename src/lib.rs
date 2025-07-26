@@ -105,16 +105,18 @@ fn spawn_player(
     let thruster_firing_id = materials.add(SHIP_THRUSTER_COLOR_ACTIVE);
     let thruster_stopped_id = materials.add(SHIP_THRUSTER_COLOR_INACTIVE);
 
+    let ship_material = materials.add(PLAYER_SHIP_COLOR);
     let ship_mesh = MaterialMesh2dBundle {
         mesh: meshes.add(triangle).into(),
-        material: materials.add(PLAYER_SHIP_COLOR),
+        material: MeshMaterial2d(ship_material),
         transform: Transform::default().with_scale(Vec3::new(20.0, 20.0, 20.0)),
         ..default()
     };
 
+    let thruster_material = materials.add(PLAYER_SHIP_COLOR);
     let thruster_mesh = MaterialMesh2dBundle {
         mesh: meshes.add(triangle).into(),
-        material: materials.add(PLAYER_SHIP_COLOR),
+        material: MeshMaterial2d(thruster_material),
         transform: Transform::default()
             .with_scale(Vec3::splat(0.5))
             .with_translation(Vec3::new(-0.5, 0.0, -0.1)),
@@ -154,9 +156,9 @@ fn input_ship_thruster(
 
     if keyboard_input.pressed(KeyCode::KeyW) {
         velocity.0 += Vec2::from_angle(rotation.0) * SHIP_THRUST;
-        commands.entity(*thrusters).insert(colors.0.clone());
+        commands.entity(*thrusters).insert(MeshMaterial2d(colors.0.clone()));
     } else {
-        commands.entity(*thrusters).insert(colors.1.clone());
+        commands.entity(*thrusters).insert(MeshMaterial2d(colors.1.clone()));
     }
 }
 
