@@ -123,18 +123,15 @@ fn spawn_player(
         ..default()
     };
 
-    let thruster = commands.spawn(thruster_mesh).id();
-
-    let mut ship_id = commands.spawn((
+    commands.spawn((
         Ship,
         Position(Vec2::default()),
         Velocity(Vec2::ZERO),
         Rotation(0.0),
         ship_mesh,
         ThrusterColors(thruster_firing_id, thruster_stopped_id),
-    ));
+    )).with_child(thruster_mesh);
 
-    ship_id.add_child(thruster);
 }
 
 /*
