@@ -111,22 +111,24 @@ fn spawn_player(
     let thruster_material = materials.add(PLAYER_SHIP_COLOR);
     let thruster_mesh = meshes.add(triangle);
 
-    commands.spawn((
-        Ship,
-        Position(Vec2::default()),
-        Velocity(Vec2::ZERO),
-        Rotation(0.0),
-        Mesh2d(ship_mesh),
-        MeshMaterial2d(ship_material),
-        ThrusterColors(thruster_firing_id, thruster_stopped_id),
-        Transform::default().with_scale(Vec3::new(20.0, 20.0, 20.0)),
-    )).with_child((
-        Mesh2d(thruster_mesh),
-        MeshMaterial2d(thruster_material),
-        Transform::default()
-            .with_scale(Vec3::splat(0.5))
-            .with_translation(Vec3::new(-0.5, 0.0, -0.1)),
-    ));
+    commands
+        .spawn((
+            Ship,
+            Position(Vec2::default()),
+            Velocity(Vec2::ZERO),
+            Rotation(0.0),
+            Mesh2d(ship_mesh),
+            MeshMaterial2d(ship_material),
+            ThrusterColors(thruster_firing_id, thruster_stopped_id),
+            Transform::default().with_scale(Vec3::new(20.0, 20.0, 20.0)),
+        ))
+        .with_child((
+            Mesh2d(thruster_mesh),
+            MeshMaterial2d(thruster_material),
+            Transform::default()
+                .with_scale(Vec3::splat(0.5))
+                .with_translation(Vec3::new(-0.5, 0.0, -0.1)),
+        ));
 }
 
 /*
@@ -148,9 +150,13 @@ fn input_ship_thruster(
 
     if keyboard_input.pressed(KeyCode::KeyW) {
         velocity.0 += Vec2::from_angle(rotation.0) * SHIP_THRUST;
-        commands.entity(*thrusters).insert(MeshMaterial2d(colors.0.clone()));
+        commands
+            .entity(*thrusters)
+            .insert(MeshMaterial2d(colors.0.clone()));
     } else {
-        commands.entity(*thrusters).insert(MeshMaterial2d(colors.1.clone()));
+        commands
+            .entity(*thrusters)
+            .insert(MeshMaterial2d(colors.1.clone()));
     }
 }
 
@@ -228,20 +234,22 @@ fn spawn_ui(mut commands: Commands, score: Res<Score>, lives: Res<Lives>) {
 }
 
 fn start_screen(mut commands: Commands) {
-    commands.spawn((
-        TitleUI,
-        Node {
-            flex_direction: FlexDirection::Column,
-            ..Default::default()
-        },
-    )).with_children(|cmds| {
-        cmds.spawn((
-        Text::new("Robert's Bad Asteroids Game"),
-        TextFont::from_font_size(50.0),
-        ));
-        cmds.spawn((
-            Text::new("Press space to begin"),
-            TextFont::from_font_size(40.0),
-        ));
-    });
+    commands
+        .spawn((
+            TitleUI,
+            Node {
+                flex_direction: FlexDirection::Column,
+                ..Default::default()
+            },
+        ))
+        .with_children(|cmds| {
+            cmds.spawn((
+                Text::new("Robert's Bad Asteroids Game"),
+                TextFont::from_font_size(50.0),
+            ));
+            cmds.spawn((
+                Text::new("Press space to begin"),
+                TextFont::from_font_size(40.0),
+            ));
+        });
 }
