@@ -175,7 +175,7 @@ fn input_ship_rotation(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut query: Query<&mut Rotation, With<Ship>>,
 ) {
-    let Ok(mut rotation) = query.get_single_mut() else {
+    let Ok(mut rotation) = query.single_mut() else {
         let count = query.iter().count();
         panic!("There should be exactly one player ship! Instead, there seems to be {count}.");
     };
