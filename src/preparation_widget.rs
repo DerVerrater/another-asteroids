@@ -11,7 +11,8 @@ pub fn preparation_widget_plugin(app: &mut App) {
         .add_systems(
             Update,
             (animate_get_ready_widget).run_if(in_state(GameState::GetReady)),
-        );
+        )
+        .insert_resource(ReadySetGoTimer(Timer::from_seconds(3.0, TimerMode::Once)));
 }
 
 /// Marker component for things on the get-ready indicator
@@ -19,7 +20,7 @@ pub fn preparation_widget_plugin(app: &mut App) {
 struct OnReadySetGo;
 
 /// Newtype wrapper for `Timer`. Used to count down during the "get ready" phase.
-#[derive(Component)]
+#[derive(Deref, DerefMut, Resource)]
 struct ReadySetGoTimer(Timer);
 
 /// Marker for the counter text segment
@@ -71,6 +72,23 @@ fn despawn_get_ready(mut commands: Commands, to_despawn: Query<Entity, With<OnRe
     }
 }
 
-fn animate_get_ready_widget() {
-    todo!();
+fn animate_get_ready_widget(
+    mut text_segment: Single<&mut Text, With<CountdownText>>,
+    time: Res<Time>,
+    mut timer: ResMut<ReadySetGoTimer>,
+    mut game_state: ResMut<NextState<GameState>>,
+) {
+    // Advance the timer, read the remaining time and write it onto the label.
+    timer.tick(time.delta());
+
+    // Add one to the visual value so the countdown starts at 3 and stops at 1.
+    // Otherwise it starts at 2 and disappears after showing 0.
+    // That feels wrong even though it's functionally identical.
+    let tval = timer.0.remaining().as_secs() + 1;
+    **text_segment = format!("{tval}").into();
+    
+    // If the timer has expired, change state to playing.
+    if timer.finished() {
+        game_state.set(GameState::Playing);
+    }
 }
