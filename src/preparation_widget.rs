@@ -16,10 +16,45 @@ struct OnReadySetGo;
 #[derive(Component)]
 struct ReadySetGoTimer(Timer);
 
+/// Marker for the counter text segment
+#[derive(Component)]
+struct CountdownText;
+
 fn spawn_get_ready(
     mut commands: Commands,
-){
-    todo!();
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    commands.spawn((
+        OnReadySetGo, // marker, so this can be de-spawned properly
+        Node {
+            align_self: AlignSelf::Center,
+            justify_self: JustifySelf::Center,
+            align_items: AlignItems::Center,
+            justify_content: JustifyContent::Center,
+            flex_direction: FlexDirection::Column,
+            width: Val::Percent(30.),
+            height: Val::Percent(30.),
+            ..default()
+        },
+        BackgroundColor(LIGHT_BLUE.into()),
+        children![
+            (Text::new("Get Ready!"), TextColor(BLACK.into())),
+            (
+                Node {
+                    width: Val::Percent(90.0),
+                    height: Val::Percent(10.),
+                    ..default()
+                },
+                BackgroundColor(GREEN.into()),
+            ),
+            (
+                CountdownText,
+                Text::new("<uninit timer>"),
+                TextColor(RED.into()),
+            )
+        ],
+    ));
 }
 
 fn despawn_get_ready(
