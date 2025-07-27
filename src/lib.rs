@@ -14,10 +14,6 @@ pub struct AsteroidPlugin;
 impl Plugin for AsteroidPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(title_screen::GameMenuPlugin)
-            .add_systems(
-                OnEnter(GameState::Playing),
-                (spawn_camera, spawn_player, spawn_ui),
-            )
             .insert_resource(ClearColor(BACKGROUND_COLOR))
             .insert_resource(WorldSize {
                 width: WINDOW_SIZE.x,
@@ -26,6 +22,11 @@ impl Plugin for AsteroidPlugin {
             .insert_resource(Lives(3))
             .register_type::<Lives>()
             .insert_resource(Score(0))
+            .add_systems(Startup, spawn_camera)
+            .add_systems(
+                OnEnter(GameState::Playing),
+                (spawn_player, spawn_ui),
+            )
             .add_systems(
                 FixedUpdate,
                 (input_ship_thruster, input_ship_rotation, wrap_entities)
@@ -41,7 +42,7 @@ impl Plugin for AsteroidPlugin {
 }
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, States)]
-enum GameState {
+pub enum GameState {
     TitleScreen, // Program is started. Present title screen and await user start
     GetReady,    // Short timer to let the player get ready after pressing start
     Playing,     // Player has started the game. Run the main loop
@@ -142,6 +143,9 @@ fn input_ship_thruster(
     mut query: Query<(&mut Velocity, &Rotation, &mut Children, &ThrusterColors), With<Ship>>,
     mut commands: Commands,
 ) {
+    // TODO: Maybe change for a Single<Ship>> so this only runs for the one ship
+    // buuut... that would silently do nothing if there are 0 or >1 ships, and
+    // I might want to crash on purpose in that case.
     let Ok((mut velocity, rotation, children, colors)) = query.single_mut() else {
         let count = query.iter().count();
         panic!("There should be exactly one player ship! Instead, there seems to be {count}.");
@@ -183,6 +187,10 @@ fn input_ship_rotation(
     }
 }
 
+// TODO: Combine movement integration steps into one function
+// They need to be ordered so the physics is deterministic. Bevy can enforce
+// order, but it makes more sense to cut out the extra machinery and have one
+// single function. Probably better for cache locality or whatever, too.
 /*
  Add velocity to position
 */

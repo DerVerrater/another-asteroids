@@ -18,7 +18,6 @@ impl Plugin for GameMenuPlugin {
 struct TitleUI;
 
 fn spawn_menu(mut commands: Commands) {
-    commands.spawn((TitleUI, Camera2d));
     commands
         .spawn((
             TitleUI,
