@@ -8,7 +8,10 @@ impl Plugin for GameMenuPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(GameState::TitleScreen), spawn_menu)
             .add_systems(OnExit(GameState::TitleScreen), despawn_menu)
-            .add_systems(Update, handle_spacebar.run_if(in_state(GameState::TitleScreen)));
+            .add_systems(
+                Update,
+                handle_spacebar.run_if(in_state(GameState::TitleScreen)),
+            );
     }
 }
 
@@ -38,20 +41,14 @@ fn spawn_menu(mut commands: Commands) {
         });
 }
 
-fn despawn_menu(
-    mut commands: Commands,
-    to_despawn: Query<Entity, With<TitleUI>>,
-) {
+fn despawn_menu(mut commands: Commands, to_despawn: Query<Entity, With<TitleUI>>) {
     for entity in &to_despawn {
         commands.entity(entity).despawn();
     }
 }
 
-fn handle_spacebar(
-    input: Res<ButtonInput<KeyCode>>,
-    mut game_state: ResMut<NextState<GameState>>,
-) {
+fn handle_spacebar(input: Res<ButtonInput<KeyCode>>, mut game_state: ResMut<NextState<GameState>>) {
     if input.just_pressed(KeyCode::Space) {
-        game_state.set(GameState::Playing);
+        game_state.set(GameState::GetReady);
     }
 }

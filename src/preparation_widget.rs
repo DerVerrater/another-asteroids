@@ -1,11 +1,17 @@
-use bevy::prelude::*;
+use bevy::{
+    color::palettes::css::{BLACK, GREEN, LIGHT_BLUE, RED},
+    prelude::*,
+};
 
 use crate::GameState;
 
 pub fn preparation_widget_plugin(app: &mut App) {
-	app.add_systems(OnEnter(GameState::GetReady), spawn_get_ready)
-		.add_systems(OnExit(GameState::GetReady), despawn_get_ready)
-		.add_systems(Update, (animate_get_ready_widget).run_if(in_state(GameState::GetReady)));
+    app.add_systems(OnEnter(GameState::GetReady), spawn_get_ready)
+        .add_systems(OnExit(GameState::GetReady), despawn_get_ready)
+        .add_systems(
+            Update,
+            (animate_get_ready_widget).run_if(in_state(GameState::GetReady)),
+        );
 }
 
 /// Marker component for things on the get-ready indicator
@@ -65,6 +71,6 @@ fn despawn_get_ready(mut commands: Commands, to_despawn: Query<Entity, With<OnRe
     }
 }
 
-fn animate_get_ready_widget(){
+fn animate_get_ready_widget() {
     todo!();
 }

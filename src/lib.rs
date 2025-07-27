@@ -14,30 +14,30 @@ pub struct AsteroidPlugin;
 
 impl Plugin for AsteroidPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((title_screen::GameMenuPlugin, preparation_widget::preparation_widget_plugin))
-            .insert_resource(ClearColor(BACKGROUND_COLOR))
-            .insert_resource(WorldSize {
-                width: WINDOW_SIZE.x,
-                height: WINDOW_SIZE.y,
-            })
-            .insert_resource(Lives(3))
-            .register_type::<Lives>()
-            .insert_resource(Score(0))
-            .add_systems(Startup, spawn_camera)
-            .add_systems(
-                OnEnter(GameState::Playing),
-                (spawn_player, spawn_ui),
-            )
-            .add_systems(
-                FixedUpdate,
-                (input_ship_thruster, input_ship_rotation, wrap_entities)
-                    .run_if(in_state(GameState::Playing)),
-            )
-            .add_systems(
-                FixedPostUpdate,
-                (integrate_velocity, update_positions, apply_rotation_to_mesh)
-                    .run_if(in_state(GameState::Playing)),
-            );
+        app.add_plugins((
+            title_screen::GameMenuPlugin,
+            preparation_widget::preparation_widget_plugin,
+        ))
+        .insert_resource(ClearColor(BACKGROUND_COLOR))
+        .insert_resource(WorldSize {
+            width: WINDOW_SIZE.x,
+            height: WINDOW_SIZE.y,
+        })
+        .insert_resource(Lives(3))
+        .register_type::<Lives>()
+        .insert_resource(Score(0))
+        .add_systems(Startup, spawn_camera)
+        .add_systems(OnEnter(GameState::Playing), (spawn_player, spawn_ui))
+        .add_systems(
+            FixedUpdate,
+            (input_ship_thruster, input_ship_rotation, wrap_entities)
+                .run_if(in_state(GameState::Playing)),
+        )
+        .add_systems(
+            FixedPostUpdate,
+            (integrate_velocity, update_positions, apply_rotation_to_mesh)
+                .run_if(in_state(GameState::Playing)),
+        );
         app.insert_state(GameState::TitleScreen);
     }
 }
