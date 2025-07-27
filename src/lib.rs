@@ -1,4 +1,5 @@
 pub mod config;
+mod preparation_widget;
 mod title_screen;
 
 use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST, WINDOW_SIZE};
@@ -13,7 +14,7 @@ pub struct AsteroidPlugin;
 
 impl Plugin for AsteroidPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(title_screen::GameMenuPlugin)
+        app.add_plugins((title_screen::GameMenuPlugin, preparation_widget::preparation_widget_plugin))
             .insert_resource(ClearColor(BACKGROUND_COLOR))
             .insert_resource(WorldSize {
                 width: WINDOW_SIZE.x,
