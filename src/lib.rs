@@ -11,7 +11,7 @@ pub struct AsteroidPlugin;
 impl Plugin for AsteroidPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(title_screen::GameMenuPlugin)
-            .add_systems(Startup, (spawn_camera, spawn_player, spawn_ui))
+            .add_systems(OnEnter(GameState::Playing), (spawn_camera, spawn_player, spawn_ui))
             .insert_resource(ClearColor(BACKGROUND_COLOR))
             .insert_resource(WorldSize {
                 width: WINDOW_SIZE.x,
