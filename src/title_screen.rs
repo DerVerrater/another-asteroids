@@ -7,7 +7,8 @@ pub struct GameMenuPlugin;
 impl Plugin for GameMenuPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(GameState::TitleScreen), spawn_menu)
-            .add_systems(OnExit(GameState::TitleScreen), despawn_menu);
+            .add_systems(OnExit(GameState::TitleScreen), despawn_menu)
+            .add_systems(Update, handle_spacebar);
     }
 }
 
@@ -44,5 +45,14 @@ fn despawn_menu(
 ) {
     for entity in &to_despawn {
         commands.entity(entity).despawn();
+    }
+}
+
+fn handle_spacebar(
+    input: Res<ButtonInput<KeyCode>>,
+    mut game_state: ResMut<NextState<GameState>>,
+) {
+    if input.just_pressed(KeyCode::Space) {
+        game_state.set(GameState::Playing);
     }
 }
