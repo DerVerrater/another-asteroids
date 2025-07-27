@@ -57,10 +57,12 @@ fn spawn_get_ready(
     ));
 }
 
-fn despawn_get_ready(
-    mut commands: Commands,
-){
-    todo!();
+// TODO: Replace this with a generic somewhere else in the crate
+// want: `despawn_screen::<OnReadySetGo>>()`
+fn despawn_get_ready(mut commands: Commands, to_despawn: Query<Entity, With<OnReadySetGo>>) {
+    for entity in to_despawn {
+        commands.entity(entity).despawn();
+    }
 }
 
 fn animate_get_ready_widget(){
