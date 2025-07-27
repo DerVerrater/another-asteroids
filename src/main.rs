@@ -1,6 +1,7 @@
 use bevy::{prelude::*, window::WindowResolution};
 
 use asteroids::{config::WINDOW_SIZE, AsteroidPlugin};
+use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
 
 fn main() {
     App::new()
@@ -12,5 +13,7 @@ fn main() {
             ..default()
         }))
         .add_plugins(AsteroidPlugin)
+        .add_plugins(EguiPlugin::default())
+        .add_plugins(WorldInspectorPlugin::new())
         .run();
 }
