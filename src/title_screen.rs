@@ -8,7 +8,7 @@ impl Plugin for GameMenuPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(GameState::TitleScreen), spawn_menu)
             .add_systems(OnExit(GameState::TitleScreen), despawn_menu)
-            .add_systems(Update, handle_spacebar);
+            .add_systems(Update, handle_spacebar.run_if(in_state(GameState::TitleScreen)));
     }
 }
 
