@@ -31,11 +31,7 @@ struct CountdownText;
 #[derive(Component)]
 struct CountdownBar;
 
-fn spawn_get_ready(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
+fn spawn_get_ready(mut commands: Commands) {
     commands.spawn((
         OnReadySetGo, // marker, so this can be de-spawned properly
         Node {
