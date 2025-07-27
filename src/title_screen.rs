@@ -38,6 +38,11 @@ fn spawn_menu(mut commands: Commands) {
         });
 }
 
-fn despawn_menu() {
-    todo!();
+fn despawn_menu(
+    mut commands: Commands,
+    to_despawn: Query<Entity, With<TitleUI>>,
+) {
+    for entity in &to_despawn {
+        commands.entity(entity).despawn();
+    }
 }
