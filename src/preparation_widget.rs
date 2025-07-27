@@ -27,6 +27,10 @@ struct ReadySetGoTimer(Timer);
 #[derive(Component)]
 struct CountdownText;
 
+/// Marker for the counter bar segment
+#[derive(Component)]
+struct CountdownBar;
+
 fn spawn_get_ready(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -48,6 +52,7 @@ fn spawn_get_ready(
         children![
             (Text::new("Get Ready!"), TextColor(BLACK.into())),
             (
+                CountdownBar,
                 Node {
                     width: Val::Percent(90.0),
                     height: Val::Percent(10.),
@@ -74,6 +79,7 @@ fn despawn_get_ready(mut commands: Commands, to_despawn: Query<Entity, With<OnRe
 
 fn animate_get_ready_widget(
     mut text_segment: Single<&mut Text, With<CountdownText>>,
+    mut bar_segment: Single<&mut Node, With<CountdownBar>>,
     time: Res<Time>,
     mut timer: ResMut<ReadySetGoTimer>,
     mut game_state: ResMut<NextState<GameState>>,
@@ -86,7 +92,10 @@ fn animate_get_ready_widget(
     // That feels wrong even though it's functionally identical.
     let tval = timer.0.remaining().as_secs() + 1;
     **text_segment = format!("{tval}").into();
-    
+
+    // Shrink the progress bar Node
+    bar_segment.width = Val::Percent(100.0 * (1.0 - timer.fraction()));
+
     // If the timer has expired, change state to playing.
     if timer.finished() {
         game_state.set(GameState::Playing);
