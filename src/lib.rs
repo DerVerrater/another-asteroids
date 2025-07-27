@@ -4,8 +4,8 @@ mod title_screen;
 use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST, WINDOW_SIZE};
 
 use bevy::prelude::*;
-use bevy_inspector_egui::InspectorOptions;
 use bevy_inspector_egui::prelude::ReflectInspectorOptions;
+use bevy_inspector_egui::InspectorOptions;
 
 use config::{SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE};
 
@@ -14,7 +14,10 @@ pub struct AsteroidPlugin;
 impl Plugin for AsteroidPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(title_screen::GameMenuPlugin)
-            .add_systems(OnEnter(GameState::Playing), (spawn_camera, spawn_player, spawn_ui))
+            .add_systems(
+                OnEnter(GameState::Playing),
+                (spawn_camera, spawn_player, spawn_ui),
+            )
             .insert_resource(ClearColor(BACKGROUND_COLOR))
             .insert_resource(WorldSize {
                 width: WINDOW_SIZE.x,

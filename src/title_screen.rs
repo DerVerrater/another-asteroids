@@ -5,11 +5,10 @@ use bevy::prelude::*;
 pub struct GameMenuPlugin;
 
 impl Plugin for GameMenuPlugin {
-	fn build(&self, app: &mut App){
-		app
-			.add_systems(OnEnter(GameState::TitleScreen), spawn_menu)
-			.add_systems(OnExit(GameState::TitleScreen), despawn_menu);
-	}
+    fn build(&self, app: &mut App) {
+        app.add_systems(OnEnter(GameState::TitleScreen), spawn_menu)
+            .add_systems(OnExit(GameState::TitleScreen), despawn_menu);
+    }
 }
 
 // Marker component for the title screen UI entity.
@@ -18,7 +17,7 @@ impl Plugin for GameMenuPlugin {
 struct TitleUI;
 
 fn spawn_menu(mut commands: Commands) {
-	commands.spawn(Camera2d);
+    commands.spawn(Camera2d);
     commands
         .spawn((
             TitleUI,
@@ -40,5 +39,5 @@ fn spawn_menu(mut commands: Commands) {
 }
 
 fn despawn_menu() {
-	todo!();
+    todo!();
 }
