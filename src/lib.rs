@@ -1,4 +1,5 @@
 pub mod config;
+mod title_screen;
 
 use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST, WINDOW_SIZE};
 
@@ -9,7 +10,8 @@ pub struct AsteroidPlugin;
 
 impl Plugin for AsteroidPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, (spawn_camera, spawn_player, spawn_ui))
+        app.add_plugins(title_screen::GameMenuPlugin)
+            .add_systems(Startup, (spawn_camera, spawn_player, spawn_ui))
             .insert_resource(ClearColor(BACKGROUND_COLOR))
             .insert_resource(WorldSize {
                 width: WINDOW_SIZE.x,
@@ -26,9 +28,7 @@ impl Plugin for AsteroidPlugin {
                 FixedPostUpdate,
                 (integrate_velocity, update_positions, apply_rotation_to_mesh)
                     .run_if(in_state(GameState::Playing)),
-            )
-            .add_systems(OnEnter(GameState::TitleScreen), start_screen);
-
+            );
         app.insert_state(GameState::TitleScreen);
     }
 }
@@ -82,11 +82,6 @@ struct WorldSize {
     width: f32,
     height: f32,
 }
-
-// Marker component for the title screen UI entity.
-// This way, a query for the TitleUI can be used to despawn the title screen
-#[derive(Component)]
-struct TitleUI;
 
 fn spawn_camera(mut commands: Commands) {
     commands.spawn(Camera2d);
@@ -231,25 +226,4 @@ fn spawn_ui(mut commands: Commands, score: Res<Score>, lives: Res<Lives>) {
         Text::new(format!("Score: {score:?} | Lives: {lives:?}")),
         TextFont::from_font_size(25.0),
     ));
-}
-
-fn start_screen(mut commands: Commands) {
-    commands
-        .spawn((
-            TitleUI,
-            Node {
-                flex_direction: FlexDirection::Column,
-                ..Default::default()
-            },
-        ))
-        .with_children(|cmds| {
-            cmds.spawn((
-                Text::new("Robert's Bad Asteroids Game"),
-                TextFont::from_font_size(50.0),
-            ));
-            cmds.spawn((
-                Text::new("Press space to begin"),
-                TextFont::from_font_size(40.0),
-            ));
-        });
 }
