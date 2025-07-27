@@ -4,6 +4,9 @@ mod title_screen;
 use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST, WINDOW_SIZE};
 
 use bevy::prelude::*;
+use bevy_inspector_egui::InspectorOptions;
+use bevy_inspector_egui::prelude::ReflectInspectorOptions;
+
 use config::{SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE};
 
 pub struct AsteroidPlugin;
@@ -18,6 +21,7 @@ impl Plugin for AsteroidPlugin {
                 height: WINDOW_SIZE.y,
             })
             .insert_resource(Lives(3))
+            .register_type::<Lives>()
             .insert_resource(Score(0))
             .add_systems(
                 FixedUpdate,
@@ -68,7 +72,8 @@ impl From<Score> for String {
     }
 }
 
-#[derive(Resource, Debug, Deref, Clone, Copy)]
+#[derive(InspectorOptions, Reflect, Resource, Debug, Deref, Clone, Copy)]
+#[reflect(Resource, InspectorOptions)]
 struct Lives(i32);
 
 impl From<Lives> for String {
