@@ -139,7 +139,7 @@ fn input_ship_thruster(
     mut query: Query<(&mut Velocity, &Rotation, &mut Children, &ThrusterColors), With<Ship>>,
     mut commands: Commands,
 ) {
-    let Ok((mut velocity, rotation, children, colors)) = query.get_single_mut() else {
+    let Ok((mut velocity, rotation, children, colors)) = query.single_mut() else {
         let count = query.iter().count();
         panic!("There should be exactly one player ship! Instead, there seems to be {count}.");
     };
