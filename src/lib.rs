@@ -123,6 +123,7 @@ fn spawn_player(
     commands
         .spawn((
             Ship,
+            Wrapping,
             Position(Vec2::default()),
             Velocity(Vec2::ZERO),
             Rotation(0.0),
