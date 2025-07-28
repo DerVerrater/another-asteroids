@@ -62,6 +62,10 @@ struct Rotation(f32);
 #[derive(Component)]
 struct Ship;
 
+/// Marker for any entity that should wrap on screen edges
+#[derive(Component)]
+struct Wrapping;
+
 // Data component to store color properties attached to an entity
 // This was easier (and imo better) than holding global consts with
 // UUID assets.
@@ -217,7 +221,7 @@ fn apply_rotation_to_mesh(mut query: Query<(&mut Transform, &Rotation)>) {
     }
 }
 
-fn wrap_entities(mut query: Query<&mut Position>, world_size: Res<WorldSize>) {
+fn wrap_entities(mut query: Query<&mut Position, With<Wrapping>>, world_size: Res<WorldSize>) {
     let right = world_size.width / 2.0;
     let left = -right;
     let top = world_size.height / 2.0;
