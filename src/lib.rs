@@ -2,9 +2,11 @@ pub mod config;
 mod preparation_widget;
 mod title_screen;
 
+use std::time::Duration;
+
 use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST, WINDOW_SIZE};
 
-use bevy::prelude::*;
+use bevy::{color::palettes::css::GRAY, prelude::*};
 use bevy_inspector_egui::prelude::ReflectInspectorOptions;
 use bevy_inspector_egui::InspectorOptions;
 
@@ -26,11 +28,19 @@ impl Plugin for AsteroidPlugin {
         .insert_resource(Lives(3))
         .register_type::<Lives>()
         .insert_resource(Score(0))
+        .insert_resource(AsteroidSpawner {
+            timer: Timer::new(Duration::from_secs(3), TimerMode::Repeating),
+        })
         .add_systems(Startup, spawn_camera)
         .add_systems(OnEnter(GameState::Playing), (spawn_player, spawn_ui))
         .add_systems(
             FixedUpdate,
-            (input_ship_thruster, input_ship_rotation, wrap_entities)
+            (
+                input_ship_thruster,
+                input_ship_rotation,
+                wrap_entities,
+                tick_asteroid_manager,
+            )
                 .run_if(in_state(GameState::Playing)),
         )
         .add_systems(
@@ -62,6 +72,24 @@ struct Rotation(f32);
 #[derive(Component)]
 struct Ship;
 
+#[derive(Component, Deref, DerefMut)]
+struct Asteroid(AsteroidSize);
+
+enum AsteroidSize {
+    SMALL,
+    MEDIUM,
+    LARGE,
+}
+
+#[derive(Resource)]
+struct AsteroidSpawner {
+    timer: Timer,
+    // TODO: Configurables?
+    // - interval
+    // - density
+    // - size distribution
+}
+
 /// Marker for any entity that should wrap on screen edges
 #[derive(Component)]
 struct Wrapping;
@@ -69,6 +97,7 @@ struct Wrapping;
 // Data component to store color properties attached to an entity
 // This was easier (and imo better) than holding global consts with
 // UUID assets.
+// TODO: Convert to Resource. I don't need per-entity thruster colors for this.
 #[derive(Component)]
 struct ThrusterColors(Handle<ColorMaterial>, Handle<ColorMaterial>);
 
@@ -139,6 +168,36 @@ fn spawn_player(
                 .with_scale(Vec3::splat(0.5))
                 .with_translation(Vec3::new(-0.5, 0.0, -0.1)),
         ));
+}
+
+/// Update the asteroid spawn timer and spawn any asteroids
+/// that are due this frame.
+fn tick_asteroid_manager(
+    mut commands: Commands,
+    mut spawner: ResMut<AsteroidSpawner>,
+    // TODO: move the mesh & material loading somewhere else
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    time: Res<Time>,
+) {
+    spawner.timer.tick(time.delta());
+    if spawner.timer.just_finished() {
+        commands.spawn((
+            Asteroid(AsteroidSize::SMALL),
+            Position(Vec2::new(40.0, 40.0)),
+            Velocity(Vec2::new(10.0, 0.0)),
+            Rotation(0.0),
+            Mesh2d(meshes.add(Circle::new(10.0))),
+            MeshMaterial2d(materials.add(Color::from(GRAY))),
+        ));
+    }
+}
+
+/// Utility function to spawn a single asteroid of a given type
+/// TODO: convert to an event listener monitoring for "spawn asteroid" events
+/// from the `fn tick_asteroid_manager(...)` system.
+fn spawn_asteroid(mut commands: Commands) {
+    todo!();
 }
 
 /*
