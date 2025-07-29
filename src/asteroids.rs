@@ -50,7 +50,7 @@ pub fn tick_asteroid_manager(
     if spawner.timer.just_finished() {
         events.write(SpawnAsteroid {
             pos: Vec2::ZERO,
-            vel: Vec2::ZERO,
+            vel: Vec2::new(0.0, 40.0),
             size: AsteroidSize::Small,
         });
     }
@@ -65,14 +65,18 @@ pub fn spawn_asteroid(
     game_assets: Res<GameAssets>,
 ) {
     for spawn in events.read() {
-        // TODO: Use the asteroid properties defined in the event to spawn the entity
+        let (mesh, material) = match spawn.size {
+            AsteroidSize::Small => game_assets.asteroid_small(),
+            AsteroidSize::Medium => game_assets.asteroid_medium(),
+            AsteroidSize::Large => game_assets.asteroid_large(),
+        };
         commands.spawn((
             Asteroid(AsteroidSize::Small),
-            Position(Vec2::new(40.0, 40.0)),
-            Velocity(Vec2::new(10.0, 0.0)),
+            Position(spawn.pos),
+            Velocity(spawn.vel),
             Rotation(0.0),
-            Mesh2d(game_assets.asteroid_small().0),
-            MeshMaterial2d(game_assets.asteroid_small().1),
+            Mesh2d(mesh),
+            MeshMaterial2d(material),
         ));
     }
 }
