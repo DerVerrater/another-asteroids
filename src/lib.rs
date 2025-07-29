@@ -243,9 +243,7 @@ fn spawn_player(
 fn tick_asteroid_manager(
     mut commands: Commands,
     mut spawner: ResMut<AsteroidSpawner>,
-    // TODO: move the mesh & material loading somewhere else
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    game_assets: Res<GameAssets>,
     time: Res<Time>,
 ) {
     spawner.timer.tick(time.delta());
@@ -255,8 +253,8 @@ fn tick_asteroid_manager(
             Position(Vec2::new(40.0, 40.0)),
             Velocity(Vec2::new(10.0, 0.0)),
             Rotation(0.0),
-            Mesh2d(meshes.add(Circle::new(10.0))),
-            MeshMaterial2d(materials.add(Color::from(GRAY))),
+            Mesh2d(game_assets.asteroid_small().0),
+            MeshMaterial2d(game_assets.asteroid_small().1),
         ));
     }
 }
