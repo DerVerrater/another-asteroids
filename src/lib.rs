@@ -95,13 +95,6 @@ struct AsteroidSpawner {
 #[derive(Component)]
 struct Wrapping;
 
-// Data component to store color properties attached to an entity
-// This was easier (and imo better) than holding global consts with
-// UUID assets.
-// TODO: Convert to Resource. I don't need per-entity thruster colors for this.
-#[derive(Component)]
-struct ThrusterColors(Handle<ColorMaterial>, Handle<ColorMaterial>);
-
 #[derive(Resource, Debug, Deref, Clone, Copy)]
 struct Score(i32);
 
@@ -199,9 +192,6 @@ fn spawn_camera(mut commands: Commands) {
 }
 
 fn spawn_player(mut commands: Commands, game_assets: Res<GameAssets>) {
-    let thruster_firing_id = game_assets.thruster_mat_active();
-    let thruster_stopped_id = game_assets.thruster_mat_inactive();
-
     commands
         .spawn((
             Ship,
@@ -211,7 +201,6 @@ fn spawn_player(mut commands: Commands, game_assets: Res<GameAssets>) {
             Rotation(0.0),
             Mesh2d(game_assets.ship().0),
             MeshMaterial2d(game_assets.ship().1),
-            ThrusterColors(thruster_firing_id, thruster_stopped_id),
             Transform::default().with_scale(Vec3::new(20.0, 20.0, 20.0)),
         ))
         .with_child((
@@ -256,13 +245,14 @@ fn spawn_asteroid(mut commands: Commands) {
 */
 fn input_ship_thruster(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<(&mut Velocity, &Rotation, &mut Children, &ThrusterColors), With<Ship>>,
+    mut query: Query<(&mut Velocity, &Rotation, &mut Children), With<Ship>>,
     mut commands: Commands,
+    game_assets: Res<GameAssets>,
 ) {
     // TODO: Maybe change for a Single<Ship>> so this only runs for the one ship
     // buuut... that would silently do nothing if there are 0 or >1 ships, and
     // I might want to crash on purpose in that case.
-    let Ok((mut velocity, rotation, children, colors)) = query.single_mut() else {
+    let Ok((mut velocity, rotation, children)) = query.single_mut() else {
         let count = query.iter().count();
         panic!("There should be exactly one player ship! Instead, there seems to be {count}.");
     };
@@ -275,11 +265,11 @@ fn input_ship_thruster(
         velocity.0 += Vec2::from_angle(rotation.0) * SHIP_THRUST;
         commands
             .entity(*thrusters)
-            .insert(MeshMaterial2d(colors.0.clone()));
+            .insert(MeshMaterial2d(game_assets.thruster_mat_active()));
     } else {
         commands
             .entity(*thrusters)
-            .insert(MeshMaterial2d(colors.1.clone()));
+            .insert(MeshMaterial2d(game_assets.thruster_mat_inactive()));
     }
 }
 
