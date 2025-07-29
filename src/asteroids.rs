@@ -1,11 +1,11 @@
+use rand::{Rng, SeedableRng};
 use std::time::Duration;
-use rand::SeedableRng;
 
 /// This is the module containing all the rock-related things
 /// not... not the whole game.
 use bevy::prelude::*;
 
-use crate::{GameAssets, Position, Rotation, Velocity};
+use crate::{GameAssets, Position, Rotation, Velocity, WorldSize};
 
 #[derive(Component, Deref, DerefMut)]
 pub struct Asteroid(AsteroidSize);
@@ -48,14 +48,43 @@ pub fn tick_asteroid_manager(
     mut events: EventWriter<SpawnAsteroid>,
     mut spawner: ResMut<AsteroidSpawner>,
     time: Res<Time>,
+    play_area: Res<WorldSize>,
 ) {
     spawner.timer.tick(time.delta());
     if spawner.timer.just_finished() {
-        events.write(SpawnAsteroid {
-            pos: Vec2::ZERO,
-            vel: Vec2::new(0.0, 40.0),
-            size: AsteroidSize::Small,
-        });
+        let mut rng = spawner
+            .rng
+            .lock()
+            .expect("Expected to acquire lock on the AsteroidSpawner's RNG field.");
+
+        // Use polar coordinate to decide where the asteroid will spawn
+        // Theta will be random between 0 to 2pi
+        let spawn_angle = rng.random_range(0.0..(std::f32::consts::PI * 2.0));
+        // Rho will be the radius of a circle bordering the viewport, multiplied by 1.2
+        // TODO: Use view diagonal to get a minimally sized circle around the play area
+        let spawn_distance = play_area.width.max(play_area.height) / 2.0;
+
+        // Convert polar to Cartesian, use as position
+        let pos = Vec2::new(
+            spawn_distance * spawn_angle.cos(),
+            spawn_distance * spawn_angle.sin(),
+        );
+
+        // TODO: Assign velocity such that asteroids will (probably) cross the viewport
+        // Right now, I'm thinking I can use the opposite signs attached to the position Vec components.
+        // pos.x == -100, then vel.x = + <random>
+        // pos.x == 100, then vel.x = - <random>
+        // etc,
+        let vel = Vec2::new(rng.random_range(-10.0..10.0), rng.random_range(-10.0..10.0));
+
+        let size = match rng.random_range(0..=2) {
+            0 => AsteroidSize::Small,
+            1 => AsteroidSize::Medium,
+            2 => AsteroidSize::Large,
+            _ => unreachable!(),
+        };
+
+        events.write(SpawnAsteroid { pos, vel, size });
     }
 }
 
