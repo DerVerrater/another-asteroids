@@ -70,12 +70,17 @@ pub fn tick_asteroid_manager(
             spawn_distance * spawn_angle.sin(),
         );
 
-        // TODO: Assign velocity such that asteroids will (probably) cross the viewport
         // Right now, I'm thinking I can use the opposite signs attached to the position Vec components.
         // pos.x == -100, then vel.x = + <random>
         // pos.x == 100, then vel.x = - <random>
         // etc,
-        let vel = Vec2::new(rng.random_range(-10.0..10.0), rng.random_range(-10.0..10.0));
+        let mut vel = Vec2::new(rng.random_range(0.0..100.0), rng.random_range(0.0..100.0));
+        if pos.x > 0.0 {
+            vel.x *= -1.0;
+        }
+        if pos.y > 0.0 {
+            vel.y *= -1.0;
+        }
 
         let size = match rng.random_range(0..=2) {
             0 => AsteroidSize::Small,
