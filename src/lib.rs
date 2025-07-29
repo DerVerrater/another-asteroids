@@ -10,7 +10,7 @@ use bevy::{color::palettes::css::GRAY, prelude::*};
 use bevy_inspector_egui::prelude::ReflectInspectorOptions;
 use bevy_inspector_egui::InspectorOptions;
 
-use config::{SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE};
+use config::{ASTEROID_SMALL_COLOR, SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE};
 
 pub struct AsteroidPlugin;
 
@@ -31,6 +31,7 @@ impl Plugin for AsteroidPlugin {
         .insert_resource(AsteroidSpawner {
             timer: Timer::new(Duration::from_secs(3), TimerMode::Repeating),
         })
+        .init_resource::<GameAssets>()
         .add_systems(Startup, spawn_camera)
         .add_systems(OnEnter(GameState::Playing), (spawn_player, spawn_ui))
         .add_systems(
@@ -124,6 +125,73 @@ impl From<Lives> for String {
 struct WorldSize {
     width: f32,
     height: f32,
+}
+
+#[derive(Resource)]
+struct GameAssets {
+    meshes: [Handle<Mesh>; 4],
+    materials: [Handle<ColorMaterial>; 6],
+}
+
+impl GameAssets {
+    fn ship(&self) -> (Handle<Mesh>, Handle<ColorMaterial>) {
+        (self.meshes[0].clone(), self.materials[0].clone())
+    }
+
+    // The thruster mesh is actually just the ship mesh
+    fn thruster_mesh(&self) -> Handle<Mesh> {
+        self.meshes[0].clone()
+    }
+
+    // TODO: Look into parameterizing the material
+    // A shader uniform should be able to do this, but I don't know how to
+    // load those in Bevy.
+    fn thruster_mat_inactive(&self) -> Handle<ColorMaterial> {
+        self.materials[1].clone()
+    }
+
+    fn thruster_mat_active(&self) -> Handle<ColorMaterial> {
+        self.materials[2].clone()
+    }
+
+    fn asteroid_small(&self) -> (Handle<Mesh>, Handle<ColorMaterial>) {
+        (self.meshes[1].clone(), self.materials[1].clone())
+    }
+
+    fn asteroid_medium(&self) -> (Handle<Mesh>, Handle<ColorMaterial>) {
+        (self.meshes[2].clone(), self.materials[2].clone())
+    }
+
+    fn asteroid_large(&self) -> (Handle<Mesh>, Handle<ColorMaterial>) {
+        (self.meshes[3].clone(), self.materials[3].clone())
+    }
+}
+
+impl FromWorld for GameAssets {
+    fn from_world(world: &mut World) -> Self {
+        let mut world_meshes = world.resource_mut::<Assets<Mesh>>();
+        let meshes = [
+            world_meshes.add(Triangle2d::new(
+                Vec2::new(0.5, 0.0),
+                Vec2::new(-0.5, 0.45),
+                Vec2::new(-0.5, -0.45),
+            )),
+            world_meshes.add(Circle::new(10.0)),
+            world_meshes.add(Circle::new(20.0)),
+            world_meshes.add(Circle::new(40.0)),
+        ];
+        let mut world_materials = world.resource_mut::<Assets<ColorMaterial>>();
+        let materials = [
+            world_materials.add(PLAYER_SHIP_COLOR),
+            world_materials.add(SHIP_THRUSTER_COLOR_INACTIVE),
+            world_materials.add(SHIP_THRUSTER_COLOR_ACTIVE),
+            world_materials.add(ASTEROID_SMALL_COLOR),
+            // TODO: asteroid medium and large colors
+            world_materials.add(ASTEROID_SMALL_COLOR),
+            world_materials.add(ASTEROID_SMALL_COLOR),
+        ];
+        GameAssets { meshes, materials }
+    }
 }
 
 fn spawn_camera(mut commands: Commands) {
