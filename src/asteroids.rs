@@ -2,7 +2,7 @@ use std::time::Duration;
 
 /// This is the module containing all the rock-related things
 /// not... not the whole game.
-use bevy::{math::VectorSpace, prelude::*};
+use bevy::prelude::*;
 
 use crate::{GameAssets, Position, Rotation, Velocity};
 
