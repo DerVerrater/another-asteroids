@@ -10,9 +10,9 @@ use crate::{GameAssets, Position, Rotation, Velocity};
 pub struct Asteroid(AsteroidSize);
 
 pub enum AsteroidSize {
-    SMALL,
-    MEDIUM,
-    LARGE,
+    Small,
+    Medium,
+    Large,
 }
 
 #[derive(Resource)]
@@ -51,7 +51,7 @@ pub fn tick_asteroid_manager(
         events.write(SpawnAsteroid {
             pos: Vec2::ZERO,
             vel: Vec2::ZERO,
-            size: AsteroidSize::SMALL,
+            size: AsteroidSize::Small,
         });
     }
 }
@@ -67,7 +67,7 @@ pub fn spawn_asteroid(
     for spawn in events.read() {
         // TODO: Use the asteroid properties defined in the event to spawn the entity
         commands.spawn((
-            Asteroid(AsteroidSize::SMALL),
+            Asteroid(AsteroidSize::Small),
             Position(Vec2::new(40.0, 40.0)),
             Velocity(Vec2::new(10.0, 0.0)),
             Rotation(0.0),
