@@ -1,4 +1,5 @@
 use std::time::Duration;
+use rand::SeedableRng;
 
 /// This is the module containing all the rock-related things
 /// not... not the whole game.
@@ -17,6 +18,7 @@ pub enum AsteroidSize {
 
 #[derive(Resource)]
 pub struct AsteroidSpawner {
+    rng: std::sync::Mutex<rand::rngs::StdRng>,
     timer: Timer,
     // TODO: Configurables?
     // - interval
@@ -27,6 +29,7 @@ pub struct AsteroidSpawner {
 impl AsteroidSpawner {
     pub fn new() -> Self {
         Self {
+            rng: std::sync::Mutex::new(rand::rngs::StdRng::from_seed(crate::config::RNG_SEED)),
             timer: Timer::new(Duration::from_secs(3), TimerMode::Repeating),
         }
     }

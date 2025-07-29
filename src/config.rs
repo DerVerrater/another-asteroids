@@ -16,3 +16,5 @@ pub(crate) const ASTEROID_SMALL_COLOR: Color = Color::srgb(1.0, 0., 0.);
 
 pub(crate) const SHIP_THRUST: f32 = 1.0;
 pub(crate) const SHIP_ROTATION: f32 = 0.1; // +/- rotation speed in... radians per frame
+
+pub const RNG_SEED: [u8; 32] = *b"12345678909876543210123456789098";
