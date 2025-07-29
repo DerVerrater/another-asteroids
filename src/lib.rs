@@ -198,24 +198,9 @@ fn spawn_camera(mut commands: Commands) {
     commands.spawn(Camera2d);
 }
 
-fn spawn_player(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
-    let triangle = Triangle2d::new(
-        Vec2::new(0.5, 0.0),
-        Vec2::new(-0.5, 0.45),
-        Vec2::new(-0.5, -0.45),
-    );
-    let thruster_firing_id = materials.add(SHIP_THRUSTER_COLOR_ACTIVE);
-    let thruster_stopped_id = materials.add(SHIP_THRUSTER_COLOR_INACTIVE);
-
-    let ship_material = materials.add(PLAYER_SHIP_COLOR);
-    let ship_mesh = meshes.add(triangle);
-
-    let thruster_material = materials.add(PLAYER_SHIP_COLOR);
-    let thruster_mesh = meshes.add(triangle);
+fn spawn_player(mut commands: Commands, game_assets: Res<GameAssets>) {
+    let thruster_firing_id = game_assets.thruster_mat_active();
+    let thruster_stopped_id = game_assets.thruster_mat_inactive();
 
     commands
         .spawn((
@@ -224,14 +209,14 @@ fn spawn_player(
             Position(Vec2::default()),
             Velocity(Vec2::ZERO),
             Rotation(0.0),
-            Mesh2d(ship_mesh),
-            MeshMaterial2d(ship_material),
+            Mesh2d(game_assets.ship().0),
+            MeshMaterial2d(game_assets.ship().1),
             ThrusterColors(thruster_firing_id, thruster_stopped_id),
             Transform::default().with_scale(Vec3::new(20.0, 20.0, 20.0)),
         ))
         .with_child((
-            Mesh2d(thruster_mesh),
-            MeshMaterial2d(thruster_material),
+            Mesh2d(game_assets.thruster_mesh()),
+            MeshMaterial2d(game_assets.thruster_mat_inactive()),
             Transform::default()
                 .with_scale(Vec3::splat(0.5))
                 .with_translation(Vec3::new(-0.5, 0.0, -0.1)),
