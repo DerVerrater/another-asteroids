@@ -3,10 +3,9 @@ pub mod config;
 mod preparation_widget;
 mod title_screen;
 
-use std::time::Duration;
-
 use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST, WINDOW_SIZE};
 
+use asteroids::AsteroidSpawner;
 use bevy::prelude::*;
 use bevy_inspector_egui::prelude::ReflectInspectorOptions;
 use bevy_inspector_egui::InspectorOptions;
@@ -29,9 +28,7 @@ impl Plugin for AsteroidPlugin {
         .insert_resource(Lives(3))
         .register_type::<Lives>()
         .insert_resource(Score(0))
-        .insert_resource(AsteroidSpawner {
-            timer: Timer::new(Duration::from_secs(3), TimerMode::Repeating),
-        })
+        .insert_resource(AsteroidSpawner::new())
         .init_resource::<GameAssets>()
         .add_systems(Startup, spawn_camera)
         .add_systems(OnEnter(GameState::Playing), (spawn_player, spawn_ui))
@@ -41,7 +38,7 @@ impl Plugin for AsteroidPlugin {
                 input_ship_thruster,
                 input_ship_rotation,
                 wrap_entities,
-                tick_asteroid_manager,
+                asteroids::tick_asteroid_manager,
             )
                 .run_if(in_state(GameState::Playing)),
         )

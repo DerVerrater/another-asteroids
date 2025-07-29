@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 /// This is the module containing all the rock-related things
 /// not... not the whole game.
 use bevy::prelude::*;
@@ -5,16 +7,16 @@ use bevy::prelude::*;
 use crate::{GameAssets, Position, Rotation, Velocity};
 
 #[derive(Component, Deref, DerefMut)]
-struct Asteroid(AsteroidSize);
+pub struct Asteroid(AsteroidSize);
 
-enum AsteroidSize {
+pub enum AsteroidSize {
     SMALL,
     MEDIUM,
     LARGE,
 }
 
 #[derive(Resource)]
-struct AsteroidSpawner {
+pub struct AsteroidSpawner {
     timer: Timer,
     // TODO: Configurables?
     // - interval
@@ -22,9 +24,17 @@ struct AsteroidSpawner {
     // - size distribution
 }
 
+impl AsteroidSpawner {
+    pub fn new() -> Self {
+        Self {
+            timer: Timer::new(Duration::from_secs(3), TimerMode::Repeating),
+        }
+    }
+}
+
 /// Update the asteroid spawn timer and spawn any asteroids
 /// that are due this frame.
-fn tick_asteroid_manager(
+pub fn tick_asteroid_manager(
     mut commands: Commands,
     mut spawner: ResMut<AsteroidSpawner>,
     game_assets: Res<GameAssets>,
