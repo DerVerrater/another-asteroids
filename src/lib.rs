@@ -39,6 +39,7 @@ impl Plugin for AsteroidPlugin {
                 input_ship_rotation,
                 wrap_entities,
                 asteroids::tick_asteroid_manager,
+                asteroids::spawn_asteroid.after(asteroids::tick_asteroid_manager),
             )
                 .run_if(in_state(GameState::Playing)),
         )
@@ -46,7 +47,8 @@ impl Plugin for AsteroidPlugin {
             FixedPostUpdate,
             (integrate_velocity, update_positions, apply_rotation_to_mesh)
                 .run_if(in_state(GameState::Playing)),
-        );
+        )
+        .add_event::<asteroids::SpawnAsteroid>();
         app.insert_state(GameState::TitleScreen);
     }
 }
