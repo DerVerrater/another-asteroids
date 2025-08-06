@@ -1,4 +1,4 @@
-use bevy_rapier2d::prelude::Collider;
+use bevy_rapier2d::prelude::*;
 use rand::{Rng, SeedableRng};
 use std::time::Duration;
 
@@ -118,6 +118,7 @@ pub fn spawn_asteroid(
         commands.spawn((
             Asteroid(AsteroidSize::Small),
             Collider::ball(collider_radius),
+            Sensor,
             Position(spawn.pos),
             Velocity(spawn.vel),
             Rotation(0.0),

@@ -10,7 +10,11 @@ use bevy::prelude::*;
 use bevy_inspector_egui::InspectorOptions;
 use bevy_inspector_egui::prelude::ReflectInspectorOptions;
 
-use bevy_rapier2d::{plugin::{NoUserData, RapierPhysicsPlugin}, prelude::Collider, render::RapierDebugRenderPlugin};
+use bevy_rapier2d::{
+    plugin::{NoUserData, RapierPhysicsPlugin},
+    prelude::*,
+    render::RapierDebugRenderPlugin,
+};
 use config::{ASTEROID_SMALL_COLOR, SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE};
 
 pub struct AsteroidPlugin;
@@ -180,6 +184,7 @@ fn spawn_player(mut commands: Commands, game_assets: Res<GameAssets>) {
     commands
         .spawn((
             Collider::ball(0.7),
+            Sensor,
             Ship,
             Wrapping,
             Position(Vec2::default()),
