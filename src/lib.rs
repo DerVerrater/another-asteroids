@@ -47,6 +47,8 @@ impl Plugin for AsteroidPlugin {
                 wrap_entities,
                 asteroids::tick_asteroid_manager,
                 asteroids::spawn_asteroid.after(asteroids::tick_asteroid_manager),
+                // TODO: Remove debug printing
+                debug_collision_event_printer,
             )
                 .run_if(in_state(GameState::Playing)),
         )
@@ -57,6 +59,12 @@ impl Plugin for AsteroidPlugin {
         )
         .add_event::<asteroids::SpawnAsteroid>();
         app.insert_state(GameState::TitleScreen);
+    }
+}
+
+fn debug_collision_event_printer(mut collision_events: EventReader<CollisionEvent>) {
+    for event in collision_events.read() {
+        dbg!(event);
     }
 }
 
@@ -185,6 +193,8 @@ fn spawn_player(mut commands: Commands, game_assets: Res<GameAssets>) {
         .spawn((
             Collider::ball(0.7),
             Sensor,
+            ActiveEvents::COLLISION_EVENTS,
+            ActiveCollisionTypes::STATIC_STATIC,
             Ship,
             Wrapping,
             Position(Vec2::default()),
