@@ -7,8 +7,8 @@ use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THR
 
 use asteroids::AsteroidSpawner;
 use bevy::prelude::*;
-use bevy_inspector_egui::prelude::ReflectInspectorOptions;
 use bevy_inspector_egui::InspectorOptions;
+use bevy_inspector_egui::prelude::ReflectInspectorOptions;
 
 use config::{ASTEROID_SMALL_COLOR, SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE};
 

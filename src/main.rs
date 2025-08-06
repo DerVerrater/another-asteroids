@@ -1,6 +1,6 @@
 use bevy::{prelude::*, window::WindowResolution};
 
-use asteroids::{config::WINDOW_SIZE, AsteroidPlugin};
+use asteroids::{AsteroidPlugin, config::WINDOW_SIZE};
 use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
 
 fn main() {
