@@ -10,6 +10,7 @@ use bevy::prelude::*;
 use bevy_inspector_egui::InspectorOptions;
 use bevy_inspector_egui::prelude::ReflectInspectorOptions;
 
+use bevy_rapier2d::{plugin::{NoUserData, RapierPhysicsPlugin}, prelude::Collider, render::RapierDebugRenderPlugin};
 use config::{ASTEROID_SMALL_COLOR, SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE};
 
 pub struct AsteroidPlugin;
@@ -19,6 +20,8 @@ impl Plugin for AsteroidPlugin {
         app.add_plugins((
             title_screen::GameMenuPlugin,
             preparation_widget::preparation_widget_plugin,
+            RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(10.0),
+            RapierDebugRenderPlugin::default(),
         ))
         .insert_resource(ClearColor(BACKGROUND_COLOR))
         .insert_resource(WorldSize {
@@ -176,6 +179,7 @@ fn spawn_camera(mut commands: Commands) {
 fn spawn_player(mut commands: Commands, game_assets: Res<GameAssets>) {
     commands
         .spawn((
+            Collider::ball(0.7),
             Ship,
             Wrapping,
             Position(Vec2::default()),

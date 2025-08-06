@@ -1,3 +1,4 @@
+use bevy_rapier2d::prelude::Collider;
 use rand::{Rng, SeedableRng};
 use std::time::Duration;
 
@@ -107,8 +108,16 @@ pub fn spawn_asteroid(
             AsteroidSize::Medium => game_assets.asteroid_medium(),
             AsteroidSize::Large => game_assets.asteroid_large(),
         };
+
+        let collider_radius = match spawn.size {
+            AsteroidSize::Small => 10.0,
+            AsteroidSize::Medium => 20.0,
+            AsteroidSize::Large => 40.0,
+        };
+
         commands.spawn((
             Asteroid(AsteroidSize::Small),
+            Collider::ball(collider_radius),
             Position(spawn.pos),
             Velocity(spawn.vel),
             Rotation(0.0),
