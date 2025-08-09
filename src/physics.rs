@@ -1,0 +1,72 @@
+//! Custom physics items
+//! TODO: Refactor in terms of Rapier2D, *or* implement colliders and remove it.
+
+use bevy::prelude::*;
+
+use crate::WorldSize;
+
+#[derive(Component)]
+pub(crate) struct Position(pub(crate) bevy::math::Vec2);
+
+#[derive(Component)]
+pub(crate) struct Velocity(pub(crate) bevy::math::Vec2);
+
+#[derive(Component)]
+pub(crate) struct Rotation(pub(crate) f32);
+
+/// Marker for any entity that should wrap on screen edges
+#[derive(Component)]
+pub(crate) struct Wrapping;
+
+// TODO: Combine movement integration steps into one function
+// They need to be ordered so the physics is deterministic. Bevy can enforce
+// order, but it makes more sense to cut out the extra machinery and have one
+// single function. Probably better for cache locality or whatever, too.
+/*
+ Add velocity to position
+*/
+pub(crate) fn integrate_velocity(mut query: Query<(&mut Position, &Velocity)>, time: Res<Time>) {
+    for (mut position, velocity) in &mut query {
+        position.0 += velocity.0 * time.delta_secs();
+    }
+}
+
+pub(crate) fn update_positions(mut query: Query<(&mut Transform, &Position)>) {
+    for (mut transform, position) in &mut query {
+        transform.translation.x = position.0.x;
+        transform.translation.y = position.0.y;
+    }
+}
+
+/*
+ Assigns the rotation to the transform by copying it from the Rotation component.
+*/
+pub(crate) fn apply_rotation_to_mesh(mut query: Query<(&mut Transform, &Rotation)>) {
+    for (mut transform, rotation) in &mut query {
+        transform.rotation = Quat::from_rotation_z(rotation.0);
+    }
+}
+
+pub(crate) fn wrap_entities(
+    mut query: Query<&mut Position, With<Wrapping>>,
+    world_size: Res<WorldSize>,
+) {
+    let right = world_size.width / 2.0;
+    let left = -right;
+    let top = world_size.height / 2.0;
+    let bottom = -top;
+
+    for mut pos in query.iter_mut() {
+        if pos.0.x > right {
+            pos.0.x = left;
+        } else if pos.0.x < left {
+            pos.0.x = right;
+        }
+
+        if pos.0.y > top {
+            pos.0.y = bottom;
+        } else if pos.0.y < bottom {
+            pos.0.y = top;
+        }
+    }
+}

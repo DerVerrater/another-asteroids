@@ -6,7 +6,7 @@ use std::time::Duration;
 /// not... not the whole game.
 use bevy::prelude::*;
 
-use crate::{GameAssets, Position, Rotation, Velocity, WorldSize};
+use crate::{GameAssets, Rotation, WorldSize, physics::Position, physics::Velocity};
 
 #[derive(Component, Deref, DerefMut)]
 pub struct Asteroid(AsteroidSize);

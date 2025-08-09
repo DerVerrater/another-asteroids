@@ -1,6 +1,7 @@
 mod asteroids;
 pub mod config;
 mod event;
+mod physics;
 mod preparation_widget;
 mod ship;
 mod title_screen;
@@ -18,6 +19,7 @@ use bevy_rapier2d::{
     render::RapierDebugRenderPlugin,
 };
 use config::{ASTEROID_SMALL_COLOR, SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE};
+use physics::Rotation;
 use ship::Ship;
 
 pub struct AsteroidPlugin;
@@ -47,7 +49,7 @@ impl Plugin for AsteroidPlugin {
             (
                 input_ship_thruster,
                 input_ship_rotation,
-                wrap_entities,
+                physics::wrap_entities,
                 asteroids::tick_asteroid_manager,
                 asteroids::spawn_asteroid.after(asteroids::tick_asteroid_manager),
                 collision_listener,
@@ -58,7 +60,11 @@ impl Plugin for AsteroidPlugin {
         )
         .add_systems(
             FixedPostUpdate,
-            (integrate_velocity, update_positions, apply_rotation_to_mesh)
+            (
+                physics::integrate_velocity,
+                physics::update_positions,
+                physics::apply_rotation_to_mesh,
+            )
                 .run_if(in_state(GameState::Playing)),
         )
         .add_event::<asteroids::SpawnAsteroid>()
@@ -129,19 +135,6 @@ pub enum GameState {
     Playing,     // Player has started the game. Run the main loop
     GameOver,    // Game has ended. Present game over dialogue and await user restart
 }
-
-#[derive(Component)]
-struct Position(bevy::math::Vec2);
-
-#[derive(Component)]
-struct Velocity(bevy::math::Vec2);
-
-#[derive(Component)]
-struct Rotation(f32);
-
-/// Marker for any entity that should wrap on screen edges
-#[derive(Component)]
-struct Wrapping;
 
 #[derive(Resource, Debug, Deref, Clone, Copy)]
 struct Score(i32);
@@ -244,7 +237,7 @@ fn spawn_camera(mut commands: Commands) {
 */
 fn input_ship_thruster(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<(&mut Velocity, &Rotation, &mut Children), With<Ship>>,
+    mut query: Query<(&mut physics::Velocity, &Rotation, &mut Children), With<Ship>>,
     mut commands: Commands,
     game_assets: Res<GameAssets>,
 ) {
@@ -289,56 +282,6 @@ fn input_ship_rotation(
         rotation.0 += SHIP_ROTATION;
     } else if keyboard_input.pressed(KeyCode::KeyD) {
         rotation.0 -= SHIP_ROTATION;
-    }
-}
-
-// TODO: Combine movement integration steps into one function
-// They need to be ordered so the physics is deterministic. Bevy can enforce
-// order, but it makes more sense to cut out the extra machinery and have one
-// single function. Probably better for cache locality or whatever, too.
-/*
- Add velocity to position
-*/
-fn integrate_velocity(mut query: Query<(&mut Position, &Velocity)>, time: Res<Time>) {
-    for (mut position, velocity) in &mut query {
-        position.0 += velocity.0 * time.delta_secs();
-    }
-}
-
-fn update_positions(mut query: Query<(&mut Transform, &Position)>) {
-    for (mut transform, position) in &mut query {
-        transform.translation.x = position.0.x;
-        transform.translation.y = position.0.y;
-    }
-}
-
-/*
- Assigns the rotation to the transform by copying it from the Rotation component.
-*/
-fn apply_rotation_to_mesh(mut query: Query<(&mut Transform, &Rotation)>) {
-    for (mut transform, rotation) in &mut query {
-        transform.rotation = Quat::from_rotation_z(rotation.0);
-    }
-}
-
-fn wrap_entities(mut query: Query<&mut Position, With<Wrapping>>, world_size: Res<WorldSize>) {
-    let right = world_size.width / 2.0;
-    let left = -right;
-    let top = world_size.height / 2.0;
-    let bottom = -top;
-
-    for mut pos in query.iter_mut() {
-        if pos.0.x > right {
-            pos.0.x = left;
-        } else if pos.0.x < left {
-            pos.0.x = right;
-        }
-
-        if pos.0.y > top {
-            pos.0.y = bottom;
-        } else if pos.0.y < bottom {
-            pos.0.y = top;
-        }
     }
 }
 
