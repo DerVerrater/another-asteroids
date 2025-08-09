@@ -11,7 +11,7 @@ use crate::config::{
     ASTEROID_SMALL_COLOR, BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST,
     SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE, WINDOW_SIZE,
 };
-use crate::physics::Rotation;
+use crate::physics::AngularVelocity;
 use crate::ship::Ship;
 
 use bevy::prelude::*;
@@ -70,7 +70,7 @@ impl Plugin for AsteroidPlugin {
         .add_event::<asteroids::SpawnAsteroid>()
         .add_event::<event::AsteroidDestroy>()
         .add_event::<event::ShipDestroy>();
-        app.insert_state(GameState::TitleScreen);
+        app.insert_state(GameState::Playing);
     }
 }
 
@@ -237,24 +237,25 @@ fn spawn_camera(mut commands: Commands) {
 */
 fn input_ship_thruster(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<(&mut physics::Velocity, &Rotation, &mut Children), With<Ship>>,
+    mut query: Query<(&mut physics::Velocity, &Transform, &mut Children), With<Ship>>,
     mut commands: Commands,
     game_assets: Res<GameAssets>,
 ) {
     // TODO: Maybe change for a Single<Ship>> so this only runs for the one ship
     // buuut... that would silently do nothing if there are 0 or >1 ships, and
     // I might want to crash on purpose in that case.
-    let Ok((mut velocity, rotation, children)) = query.single_mut() else {
+    let Ok((mut velocity, transform, children)) = query.single_mut() else {
         let count = query.iter().count();
         panic!("There should be exactly one player ship! Instead, there seems to be {count}.");
     };
 
+    let rotation = transform.rotation;
     let thrusters = children
         .first()
         .expect("Couldn't find first child, which should be the thruster");
 
     if keyboard_input.pressed(KeyCode::KeyW) {
-        velocity.0 += Vec2::from_angle(rotation.0) * SHIP_THRUST;
+        velocity.0 += Vec2::from_angle(rotation.z) * SHIP_THRUST;
         commands
             .entity(*thrusters)
             .insert(MeshMaterial2d(game_assets.thruster_mat_active()));
@@ -271,17 +272,17 @@ fn input_ship_thruster(
 */
 fn input_ship_rotation(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<&mut Rotation, With<Ship>>,
+    mut query: Query<&mut AngularVelocity, With<Ship>>,
 ) {
-    let Ok(mut rotation) = query.single_mut() else {
+    let Ok(mut angular_vel) = query.single_mut() else {
         let count = query.iter().count();
         panic!("There should be exactly one player ship! Instead, there seems to be {count}.");
     };
 
     if keyboard_input.pressed(KeyCode::KeyA) {
-        rotation.0 += SHIP_ROTATION;
+        angular_vel.0 += SHIP_ROTATION;
     } else if keyboard_input.pressed(KeyCode::KeyD) {
-        rotation.0 -= SHIP_ROTATION;
+        angular_vel.0 -= SHIP_ROTATION;
     }
 }
 

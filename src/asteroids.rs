@@ -7,7 +7,7 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 
-use crate::{GameAssets, Rotation, WorldSize, physics::Velocity};
+use crate::{GameAssets, WorldSize, physics::Velocity};
 
 #[derive(Component, Deref, DerefMut)]
 pub struct Asteroid(AsteroidSize);
@@ -122,7 +122,6 @@ pub fn spawn_asteroid(
             Sensor,
             Transform::from_translation(spawn.pos.extend(0.0)),
             Velocity(spawn.vel),
-            Rotation(0.0),
             Mesh2d(mesh),
             MeshMaterial2d(material),
         ));

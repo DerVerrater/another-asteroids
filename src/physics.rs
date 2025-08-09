@@ -11,9 +11,6 @@ pub(crate) struct Velocity(pub(crate) bevy::math::Vec2);
 #[derive(Component)]
 pub(crate) struct AngularVelocity(pub(crate) f32);
 
-#[derive(Component)]
-pub(crate) struct Rotation(pub(crate) f32);
-
 /// Marker for any entity that should wrap on screen edges
 #[derive(Component)]
 pub(crate) struct Wrapping;
