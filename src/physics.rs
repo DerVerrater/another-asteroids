@@ -45,7 +45,7 @@ pub(crate) fn apply_rotation_to_mesh(mut query: Query<(&mut Transform, &Rotation
 }
 
 pub(crate) fn wrap_entities(
-    mut query: Query<&mut Position, With<Wrapping>>,
+    mut query: Query<&mut Transform, With<Wrapping>>,
     world_size: Res<WorldSize>,
 ) {
     let right = world_size.width / 2.0;
@@ -54,16 +54,16 @@ pub(crate) fn wrap_entities(
     let bottom = -top;
 
     for mut pos in query.iter_mut() {
-        if pos.0.x > right {
-            pos.0.x = left;
-        } else if pos.0.x < left {
-            pos.0.x = right;
+        if pos.translation.x > right {
+            pos.translation.x = left;
+        } else if pos.translation.x < left {
+            pos.translation.x = right;
         }
 
-        if pos.0.y > top {
-            pos.0.y = bottom;
-        } else if pos.0.y < bottom {
-            pos.0.y = top;
+        if pos.translation.y > top {
+            pos.translation.y = bottom;
+        } else if pos.translation.y < bottom {
+            pos.translation.y = top;
         }
     }
 }
