@@ -25,16 +25,13 @@ pub(crate) struct Wrapping;
 /*
  Add velocity to position
 */
-pub(crate) fn integrate_velocity(mut query: Query<(&mut Position, &Velocity)>, time: Res<Time>) {
-    for (mut position, velocity) in &mut query {
-        position.0 += velocity.0 * time.delta_secs();
-    }
-}
-
-pub(crate) fn update_positions(mut query: Query<(&mut Transform, &Position)>) {
-    for (mut transform, position) in &mut query {
-        transform.translation.x = position.0.x;
-        transform.translation.y = position.0.y;
+pub(crate) fn integrate_velocity(
+	mut query: Query<(&mut Transform, &Velocity)>,
+	time: Res<Time>
+) {
+    for (mut transform, velocity) in &mut query {
+		let delta = velocity.0 * time.delta_secs();
+		transform.translation += delta.extend(0.0);
     }
 }
 

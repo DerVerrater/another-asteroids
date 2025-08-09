@@ -63,7 +63,6 @@ impl Plugin for AsteroidPlugin {
             FixedPostUpdate,
             (
                 physics::integrate_velocity,
-                physics::update_positions,
                 physics::apply_rotation_to_mesh,
             )
                 .run_if(in_state(GameState::Playing)),
