@@ -1,9 +1,9 @@
+use crate::GameState;
+
 use bevy::{
     color::palettes::css::{BLACK, GREEN, LIGHT_BLUE, RED},
     prelude::*,
 };
-
-use crate::GameState;
 
 pub fn preparation_widget_plugin(app: &mut App) {
     app.add_systems(OnEnter(GameState::GetReady), spawn_get_ready)

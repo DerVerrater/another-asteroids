@@ -6,21 +6,22 @@ mod preparation_widget;
 mod ship;
 mod title_screen;
 
-use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST, WINDOW_SIZE};
+use crate::asteroids::{Asteroid, AsteroidSpawner};
+use crate::config::{
+    ASTEROID_SMALL_COLOR, BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST,
+    SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE, WINDOW_SIZE,
+};
+use crate::physics::Rotation;
+use crate::ship::Ship;
 
-use asteroids::{Asteroid, AsteroidSpawner};
 use bevy::prelude::*;
 use bevy_inspector_egui::InspectorOptions;
 use bevy_inspector_egui::prelude::ReflectInspectorOptions;
-
 use bevy_rapier2d::{
     plugin::{NoUserData, RapierPhysicsPlugin},
     prelude::*,
     render::RapierDebugRenderPlugin,
 };
-use config::{ASTEROID_SMALL_COLOR, SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE};
-use physics::Rotation;
-use ship::Ship;
 
 pub struct AsteroidPlugin;
 

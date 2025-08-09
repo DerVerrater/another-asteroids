@@ -1,9 +1,9 @@
 //! Custom physics items
 //! TODO: Refactor in terms of Rapier2D, *or* implement colliders and remove it.
 
-use bevy::prelude::*;
-
 use crate::WorldSize;
+
+use bevy::prelude::*;
 
 #[derive(Component)]
 pub(crate) struct Position(pub(crate) bevy::math::Vec2);

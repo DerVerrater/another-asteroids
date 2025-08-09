@@ -1,7 +1,10 @@
+use crate::{
+    GameAssets, Rotation,
+    physics::{Position, Velocity, Wrapping},
+};
+
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-
-use crate::{GameAssets, Rotation, physics::Position, physics::Velocity, physics::Wrapping};
 
 #[derive(Component)]
 pub struct Ship;
