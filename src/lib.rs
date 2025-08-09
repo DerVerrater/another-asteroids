@@ -1,6 +1,7 @@
 mod asteroids;
 pub mod config;
 mod preparation_widget;
+mod ship;
 mod title_screen;
 
 use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST, WINDOW_SIZE};
@@ -16,6 +17,7 @@ use bevy_rapier2d::{
     render::RapierDebugRenderPlugin,
 };
 use config::{ASTEROID_SMALL_COLOR, SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE};
+use ship::Ship;
 
 pub struct AsteroidPlugin;
 
@@ -38,7 +40,7 @@ impl Plugin for AsteroidPlugin {
         .insert_resource(AsteroidSpawner::new())
         .init_resource::<GameAssets>()
         .add_systems(Startup, spawn_camera)
-        .add_systems(OnEnter(GameState::Playing), (spawn_player, spawn_ui))
+        .add_systems(OnEnter(GameState::Playing), (ship::spawn_player, spawn_ui))
         .add_systems(
             FixedUpdate,
             (
@@ -84,9 +86,6 @@ struct Velocity(bevy::math::Vec2);
 
 #[derive(Component)]
 struct Rotation(f32);
-
-#[derive(Component)]
-struct Ship;
 
 /// Marker for any entity that should wrap on screen edges
 #[derive(Component)]
@@ -186,31 +185,6 @@ impl FromWorld for GameAssets {
 
 fn spawn_camera(mut commands: Commands) {
     commands.spawn(Camera2d);
-}
-
-fn spawn_player(mut commands: Commands, game_assets: Res<GameAssets>) {
-    commands
-        .spawn((
-            Collider::ball(0.7),
-            Sensor,
-            ActiveEvents::COLLISION_EVENTS,
-            ActiveCollisionTypes::STATIC_STATIC,
-            Ship,
-            Wrapping,
-            Position(Vec2::default()),
-            Velocity(Vec2::ZERO),
-            Rotation(0.0),
-            Mesh2d(game_assets.ship().0),
-            MeshMaterial2d(game_assets.ship().1),
-            Transform::default().with_scale(Vec3::new(20.0, 20.0, 20.0)),
-        ))
-        .with_child((
-            Mesh2d(game_assets.thruster_mesh()),
-            MeshMaterial2d(game_assets.thruster_mat_inactive()),
-            Transform::default()
-                .with_scale(Vec3::splat(0.5))
-                .with_translation(Vec3::new(-0.5, 0.0, -0.1)),
-        ));
 }
 
 /*
