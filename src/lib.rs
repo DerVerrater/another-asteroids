@@ -280,9 +280,11 @@ fn input_ship_rotation(
     };
 
     if keyboard_input.pressed(KeyCode::KeyA) {
-        angular_vel.0 += SHIP_ROTATION;
+        angular_vel.0 = SHIP_ROTATION;
     } else if keyboard_input.pressed(KeyCode::KeyD) {
-        angular_vel.0 -= SHIP_ROTATION;
+        angular_vel.0 = -SHIP_ROTATION;
+    } else {
+        angular_vel.0 = 0.0;
     }
 }
 

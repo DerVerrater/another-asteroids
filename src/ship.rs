@@ -1,5 +1,6 @@
 use crate::{
-    physics::{Velocity, Wrapping}, AngularVelocity, GameAssets
+    AngularVelocity, GameAssets,
+    physics::{Velocity, Wrapping},
 };
 
 use bevy::prelude::*;
