@@ -1,9 +1,10 @@
+//! This is the module containing all the rock-related things.
+//! Not... not the whole game.
+
 use bevy_rapier2d::prelude::*;
 use rand::{Rng, SeedableRng};
 use std::time::Duration;
 
-/// This is the module containing all the rock-related things
-/// not... not the whole game.
 use bevy::prelude::*;
 
 use crate::{GameAssets, Rotation, WorldSize, physics::Position, physics::Velocity};

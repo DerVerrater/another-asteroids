@@ -1,7 +1,5 @@
-/*
- Global constants used all over the program. Rather than leaving them scattered
-where ever they happen to be needed, I'm concentrating them here.
-*/
+//! Global constants used all over the program. Rather than leaving them scattered
+//! where ever they happen to be needed, I'm concentrating them here.
 
 use bevy::color::Color;
 
