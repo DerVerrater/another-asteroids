@@ -18,13 +18,7 @@ pub(crate) struct Rotation(pub(crate) f32);
 #[derive(Component)]
 pub(crate) struct Wrapping;
 
-// TODO: Combine movement integration steps into one function
-// They need to be ordered so the physics is deterministic. Bevy can enforce
-// order, but it makes more sense to cut out the extra machinery and have one
-// single function. Probably better for cache locality or whatever, too.
-/*
- Add velocity to position
-*/
+/// Integrate linear velocity and update the entity's transform.
 pub(crate) fn integrate_velocity(mut query: Query<(&mut Transform, &Velocity)>, time: Res<Time>) {
     for (mut transform, velocity) in &mut query {
         let delta = velocity.0 * time.delta_secs();
