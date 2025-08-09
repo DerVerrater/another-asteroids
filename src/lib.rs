@@ -61,10 +61,7 @@ impl Plugin for AsteroidPlugin {
         )
         .add_systems(
             FixedPostUpdate,
-            (
-                physics::integrate_velocity,
-                physics::apply_rotation_to_mesh,
-            )
+            (physics::integrate_velocity, physics::apply_rotation_to_mesh)
                 .run_if(in_state(GameState::Playing)),
         )
         .add_event::<asteroids::SpawnAsteroid>()
