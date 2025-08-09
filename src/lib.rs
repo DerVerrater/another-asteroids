@@ -1,12 +1,13 @@
 mod asteroids;
 pub mod config;
+mod event;
 mod preparation_widget;
 mod ship;
 mod title_screen;
 
 use crate::config::{BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST, WINDOW_SIZE};
 
-use asteroids::AsteroidSpawner;
+use asteroids::{Asteroid, AsteroidSpawner};
 use bevy::prelude::*;
 use bevy_inspector_egui::InspectorOptions;
 use bevy_inspector_egui::prelude::ReflectInspectorOptions;
@@ -49,6 +50,7 @@ impl Plugin for AsteroidPlugin {
                 wrap_entities,
                 asteroids::tick_asteroid_manager,
                 asteroids::spawn_asteroid.after(asteroids::tick_asteroid_manager),
+                collision_listener,
                 // TODO: Remove debug printing
                 debug_collision_event_printer,
             )
@@ -59,7 +61,9 @@ impl Plugin for AsteroidPlugin {
             (integrate_velocity, update_positions, apply_rotation_to_mesh)
                 .run_if(in_state(GameState::Playing)),
         )
-        .add_event::<asteroids::SpawnAsteroid>();
+        .add_event::<asteroids::SpawnAsteroid>()
+        .add_event::<event::AsteroidDestroy>()
+        .add_event::<event::ShipDestroy>();
         app.insert_state(GameState::TitleScreen);
     }
 }
@@ -67,6 +71,54 @@ impl Plugin for AsteroidPlugin {
 fn debug_collision_event_printer(mut collision_events: EventReader<CollisionEvent>) {
     for event in collision_events.read() {
         dbg!(event);
+    }
+}
+
+/// The collision event routing system.
+///
+/// When a `CollisionEvent` occurrs, this system checks which things collided
+/// and emits secondary events accordignly.
+///
+/// | Objects | Response |
+/// |-|-|
+/// | Ship & Asteroid | emits event [`ShipDestroy`](`crate::event::ShipDestroy`) |
+/// | Asteroid & Bullet | emits event [`AsteroidDestroy`](`crate::event::AsteroidDestroy`) |
+/// | Asteroid & Asteroid | Nothing. Asteroids won't collide with each other |
+/// | Bullet & Bullet | Nothing. Bullets won't collide with each other (and probably can't under normal gameplay conditions) |
+/// | Bullet & Ship | Nothing. The player shouldn't be able to shoot themselves (and the Flying Saucer hasn't been impl.'d, so it's bullets don't count) |
+fn collision_listener(
+    mut collisions: EventReader<CollisionEvent>,
+    mut ship_writer: EventWriter<event::ShipDestroy>,
+    mut asteroid_writer: EventWriter<event::AsteroidDestroy>,
+    player: Single<Entity, With<Ship>>,
+    rocks: Query<&Asteroid>,
+) {
+    for event in collisions.read() {
+        if let CollisionEvent::Started(one, two, _flags) = event {
+            // Valid collisions are:
+            //
+            // - Ship & Asteroid
+            // - Bullet & Asteroid
+            //
+            // Asteroids don't collide with each other, bullets don't collide
+            // with each other, and bullets don't collide with the player ship.
+
+            // Option 1: Ship & Asteroid
+            if *one == *player {
+                if rocks.contains(*two) {
+                    // player-asteroid collision
+                    dbg!("Writing ShipDestroy event");
+                    ship_writer.write(event::ShipDestroy);
+                } // else, we don't care
+            } else if *two == *player {
+                if rocks.contains(*one) {
+                    dbg!("Writing ShipDestroy event");
+                    ship_writer.write(event::ShipDestroy);
+                }
+            }
+
+            // TODO: Bullet-asteroid collisions
+        }
     }
 }
 
