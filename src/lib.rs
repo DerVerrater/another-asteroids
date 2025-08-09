@@ -249,13 +249,12 @@ fn input_ship_thruster(
         panic!("There should be exactly one player ship! Instead, there seems to be {count}.");
     };
 
-    let rotation = transform.rotation;
     let thrusters = children
         .first()
         .expect("Couldn't find first child, which should be the thruster");
 
     if keyboard_input.pressed(KeyCode::KeyW) {
-        velocity.0 += Vec2::from_angle(rotation.z) * SHIP_THRUST;
+        velocity.0 += (transform.rotation * Vec3::X).xy() * SHIP_THRUST;
         commands
             .entity(*thrusters)
             .insert(MeshMaterial2d(game_assets.thruster_mat_active()));
