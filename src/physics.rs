@@ -26,12 +26,15 @@ pub(crate) fn integrate_velocity(mut query: Query<(&mut Transform, &Velocity)>, 
     }
 }
 
-/*
- Assigns the rotation to the transform by copying it from the Rotation component.
-*/
-pub(crate) fn apply_rotation_to_mesh(mut query: Query<(&mut Transform, &Rotation)>) {
-    for (mut transform, rotation) in &mut query {
-        transform.rotation = Quat::from_rotation_z(rotation.0);
+/// Integrate angular velocity and update the entity's transform.
+pub(crate) fn integrate_angular_velocity(
+    mut objects: Query<(&mut Transform, &AngularVelocity)>,
+    time: Res<Time>,
+) {
+    for (mut transform, ang_vel) in &mut objects {
+        let delta = ang_vel.0 * time.delta_secs();
+        let temp = transform.rotation + Quat::from_rotation_z(delta);
+        transform.rotation = temp;
     }
 }
 
