@@ -30,8 +30,7 @@ pub(crate) fn integrate_angular_velocity(
 ) {
     for (mut transform, ang_vel) in &mut objects {
         let delta = ang_vel.0 * time.delta_secs();
-        let temp = transform.rotation + Quat::from_rotation_z(delta);
-        transform.rotation = temp;
+        transform.rotate_z(delta);
     }
 }
 
