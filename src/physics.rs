@@ -6,9 +6,6 @@ use crate::WorldSize;
 use bevy::prelude::*;
 
 #[derive(Component)]
-pub(crate) struct Position(pub(crate) bevy::math::Vec2);
-
-#[derive(Component)]
 pub(crate) struct Velocity(pub(crate) bevy::math::Vec2);
 
 #[derive(Component)]

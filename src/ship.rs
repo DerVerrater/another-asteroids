@@ -1,6 +1,6 @@
 use crate::{
     GameAssets, Rotation,
-    physics::{Position, Velocity, Wrapping},
+    physics::{Velocity, Wrapping},
 };
 
 use bevy::prelude::*;
@@ -18,7 +18,6 @@ pub fn spawn_player(mut commands: Commands, game_assets: Res<GameAssets>) {
             ActiveCollisionTypes::STATIC_STATIC,
             Ship,
             Wrapping,
-            Position(Vec2::default()),
             Velocity(Vec2::ZERO),
             Rotation(0.0),
             Mesh2d(game_assets.ship().0),
