@@ -7,7 +7,7 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 
-use crate::{GameAssets, WorldSize, physics::Velocity};
+use crate::{GameAssets, Lifetime, WorldSize, config::ASTEROID_LIFETIME, physics::Velocity};
 
 #[derive(Component, Deref, DerefMut)]
 pub struct Asteroid(AsteroidSize);
@@ -124,6 +124,7 @@ pub fn spawn_asteroid(
             Velocity(spawn.vel),
             Mesh2d(mesh),
             MeshMaterial2d(material),
+            Lifetime(Timer::from_seconds(ASTEROID_LIFETIME, TimerMode::Once)),
         ));
     }
 }

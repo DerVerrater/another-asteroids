@@ -8,9 +8,9 @@ mod title_screen;
 
 use crate::asteroids::{Asteroid, AsteroidSpawner};
 use crate::config::{
-    ASTEROID_SMALL_COLOR, BACKGROUND_COLOR, BULLET_COLOR, BULLET_SPEED, PLAYER_SHIP_COLOR,
-    SHIP_ROTATION, SHIP_THRUST, SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE,
-    WINDOW_SIZE,
+    ASTEROID_SMALL_COLOR, BACKGROUND_COLOR, BULLET_COLOR, BULLET_LIFETIME, BULLET_SPEED,
+    PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST, SHIP_THRUSTER_COLOR_ACTIVE,
+    SHIP_THRUSTER_COLOR_INACTIVE, WINDOW_SIZE,
 };
 use crate::physics::AngularVelocity;
 use crate::ship::{Bullet, Ship};
@@ -340,6 +340,7 @@ fn input_ship_shoot(
             Mesh2d(game_assets.bullet().0),
             MeshMaterial2d(game_assets.bullet().1),
             ship_pos.clone(), // clone ship transform
+            Lifetime(Timer::from_seconds(BULLET_LIFETIME, TimerMode::Once)),
         ));
     }
 }
