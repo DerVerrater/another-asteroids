@@ -12,3 +12,10 @@ pub(crate) struct AsteroidDestroy(pub Entity);
 
 // TODO: BulletDestroy
 // Which depends on the still-pending Bullet component creation.
+
+/// Signals that a particular bullet has been destroyed.
+/// Used to despawn the bullet after it strikes an Asteroid.
+///
+/// TODO: Maybe use it for lifetime expiration (which is also a TODO item).
+#[derive(Event)]
+pub(crate) struct BulletDestroy(pub Entity);

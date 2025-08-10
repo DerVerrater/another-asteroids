@@ -5,7 +5,7 @@ use crate::WorldSize;
 
 use bevy::prelude::*;
 
-#[derive(Component)]
+#[derive(Clone, Component)]
 pub(crate) struct Velocity(pub(crate) bevy::math::Vec2);
 
 #[derive(Component)]

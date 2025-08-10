@@ -8,8 +8,9 @@ mod title_screen;
 
 use crate::asteroids::{Asteroid, AsteroidSpawner};
 use crate::config::{
-    ASTEROID_SMALL_COLOR, BACKGROUND_COLOR, PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST,
-    SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE, WINDOW_SIZE,
+    ASTEROID_SMALL_COLOR, BACKGROUND_COLOR, BULLET_COLOR, BULLET_SPEED, PLAYER_SHIP_COLOR,
+    SHIP_ROTATION, SHIP_THRUST, SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE,
+    WINDOW_SIZE,
 };
 use crate::physics::AngularVelocity;
 use crate::ship::Ship;
@@ -50,6 +51,7 @@ impl Plugin for AsteroidPlugin {
             (
                 input_ship_thruster,
                 input_ship_rotation,
+                input_ship_shoot,
                 physics::wrap_entities,
                 asteroids::tick_asteroid_manager,
                 asteroids::spawn_asteroid.after(asteroids::tick_asteroid_manager),
@@ -163,8 +165,8 @@ struct WorldSize {
 
 #[derive(Resource)]
 struct GameAssets {
-    meshes: [Handle<Mesh>; 4],
-    materials: [Handle<ColorMaterial>; 6],
+    meshes: [Handle<Mesh>; 5],
+    materials: [Handle<ColorMaterial>; 7],
 }
 
 impl GameAssets {
@@ -199,6 +201,10 @@ impl GameAssets {
     fn asteroid_large(&self) -> (Handle<Mesh>, Handle<ColorMaterial>) {
         (self.meshes[3].clone(), self.materials[3].clone())
     }
+
+    fn bullet(&self) -> (Handle<Mesh>, Handle<ColorMaterial>) {
+        (self.meshes[4].clone(), self.materials[6].clone())
+    }
 }
 
 impl FromWorld for GameAssets {
@@ -213,6 +219,7 @@ impl FromWorld for GameAssets {
             world_meshes.add(Circle::new(10.0)),
             world_meshes.add(Circle::new(20.0)),
             world_meshes.add(Circle::new(40.0)),
+            world_meshes.add(Circle::new(0.2)),
         ];
         let mut world_materials = world.resource_mut::<Assets<ColorMaterial>>();
         let materials = [
@@ -223,6 +230,7 @@ impl FromWorld for GameAssets {
             // TODO: asteroid medium and large colors
             world_materials.add(ASTEROID_SMALL_COLOR),
             world_materials.add(ASTEROID_SMALL_COLOR),
+            world_materials.add(BULLET_COLOR),
         ];
         GameAssets { meshes, materials }
     }
@@ -284,6 +292,35 @@ fn input_ship_rotation(
         angular_vel.0 = -SHIP_ROTATION;
     } else {
         angular_vel.0 = 0.0;
+    }
+}
+
+fn input_ship_shoot(
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+    ship: Single<(&Transform, &physics::Velocity), With<Ship>>,
+    game_assets: Res<GameAssets>,
+    mut commands: Commands,
+) {
+    let (ship_pos, ship_vel) = *ship;
+
+    // Derive bullet velocity, add to the ship's velocity
+    let bullet_vel = (ship_pos.rotation * Vec3::X).xy() * BULLET_SPEED;
+    let bullet_vel = bullet_vel + ship_vel.0;
+
+    // TODO: create a timer for the gun fire rate.
+    // For now, spawn one for each press of the spacebar.
+    if keyboard_input.just_pressed(KeyCode::Space) {
+        commands.spawn((
+            ship::Bullet,
+            Collider::ball(0.2),
+            Sensor,
+            ActiveEvents::COLLISION_EVENTS,
+            ActiveCollisionTypes::STATIC_STATIC,
+            physics::Velocity(bullet_vel),
+            Mesh2d(game_assets.bullet().0),
+            MeshMaterial2d(game_assets.bullet().1),
+            ship_pos.clone(), // clone ship transform
+        ));
     }
 }
 
