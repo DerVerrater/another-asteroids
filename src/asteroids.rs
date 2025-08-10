@@ -117,7 +117,7 @@ pub fn spawn_asteroid(
         };
 
         commands.spawn((
-            Asteroid(AsteroidSize::Small),
+            Asteroid(spawn.size),
             Collider::ball(collider_radius),
             Sensor,
             Transform::from_translation(spawn.pos.extend(0.0)),
