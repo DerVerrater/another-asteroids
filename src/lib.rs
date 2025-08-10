@@ -13,7 +13,7 @@ use crate::config::{
     WINDOW_SIZE,
 };
 use crate::physics::AngularVelocity;
-use crate::ship::Ship;
+use crate::ship::{Bullet, Ship};
 
 use bevy::prelude::*;
 use bevy_inspector_egui::InspectorOptions;
@@ -71,7 +71,8 @@ impl Plugin for AsteroidPlugin {
         )
         .add_event::<asteroids::SpawnAsteroid>()
         .add_event::<event::AsteroidDestroy>()
-        .add_event::<event::ShipDestroy>();
+        .add_event::<event::ShipDestroy>()
+        .add_event::<event::BulletDestroy>();
         app.insert_state(GameState::Playing);
     }
 }
@@ -98,7 +99,9 @@ fn collision_listener(
     mut collisions: EventReader<CollisionEvent>,
     mut ship_writer: EventWriter<event::ShipDestroy>,
     mut asteroid_writer: EventWriter<event::AsteroidDestroy>,
+    mut bullet_writer: EventWriter<event::BulletDestroy>,
     player: Single<Entity, With<Ship>>,
+    bullets: Query<&Bullet>,
     rocks: Query<&Asteroid>,
 ) {
     for event in collisions.read() {
@@ -125,7 +128,20 @@ fn collision_listener(
                 }
             }
 
-            // TODO: Bullet-asteroid collisions
+            // Option 2: Bullet & Asteroid
+            if bullets.contains(*one) {
+                if rocks.contains(*two) {
+                    dbg!("Writing AsteroidDestroy & BulletDestroy events");
+                    asteroid_writer.write(event::AsteroidDestroy(*two));
+                    bullet_writer.write(event::BulletDestroy(*one));
+                }
+            } else if rocks.contains(*one) {
+                if bullets.contains(*two) {
+                    dbg!("Writing AsteroidDestroy & BulletDestroy events");
+                    asteroid_writer.write(event::AsteroidDestroy(*one));
+                    bullet_writer.write(event::BulletDestroy(*two));
+                }
+            }
         }
     }
 }
