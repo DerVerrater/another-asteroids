@@ -55,6 +55,7 @@ impl Plugin for AsteroidPlugin {
                 physics::wrap_entities,
                 asteroids::tick_asteroid_manager,
                 asteroids::spawn_asteroid.after(asteroids::tick_asteroid_manager),
+                ship::bullet_impact_listener,
                 collision_listener,
                 // TODO: Remove debug printing
                 debug_collision_event_printer,

@@ -1,5 +1,6 @@
 use crate::{
     AngularVelocity, GameAssets,
+    event::BulletDestroy,
     physics::{Velocity, Wrapping},
 };
 
@@ -34,4 +35,12 @@ pub fn spawn_player(mut commands: Commands, game_assets: Res<GameAssets>) {
                 .with_scale(Vec3::splat(0.5))
                 .with_translation(Vec3::new(-0.5, 0.0, -0.1)),
         ));
+}
+
+/// Watch for [`BulletDestroy`] events and despawn
+/// the associated bullet.
+pub fn bullet_impact_listener(mut commands: Commands, mut events: EventReader<BulletDestroy>) {
+    for event in events.read() {
+        commands.entity(event.0).despawn();
+    }
 }
