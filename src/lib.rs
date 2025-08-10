@@ -58,6 +58,7 @@ impl Plugin for AsteroidPlugin {
                 collision_listener,
                 // TODO: Remove debug printing
                 debug_collision_event_printer,
+                tick_lifetimes,
             )
                 .run_if(in_state(GameState::Playing)),
         )
@@ -162,6 +163,9 @@ impl From<Score> for String {
         value.to_string()
     }
 }
+
+#[derive(Component)]
+struct Lifetime(Timer);
 
 #[derive(InspectorOptions, Reflect, Resource, Debug, Deref, Clone, Copy)]
 #[reflect(Resource, InspectorOptions)]
@@ -345,4 +349,13 @@ fn spawn_ui(mut commands: Commands, score: Res<Score>, lives: Res<Lives>) {
         Text::new(format!("Score: {score:?} | Lives: {lives:?}")),
         TextFont::from_font_size(25.0),
     ));
+}
+
+fn tick_lifetimes(mut commands: Commands, time: Res<Time>, query: Query<(Entity, &mut Lifetime)>) {
+    for (e, mut life) in query {
+        life.0.tick(time.delta());
+        if life.0.just_finished() {
+            commands.entity(e).despawn();
+        }
+    }
 }
