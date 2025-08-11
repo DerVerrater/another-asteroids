@@ -7,15 +7,29 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 
-use crate::{GameAssets, Lifetime, WorldSize, config::ASTEROID_LIFETIME, physics::Velocity};
+use crate::{
+    GameAssets, Lifetime, WorldSize, config::ASTEROID_LIFETIME, event::AsteroidDestroy,
+    physics::Velocity,
+};
 
 #[derive(Component, Deref, DerefMut)]
 pub struct Asteroid(AsteroidSize);
 
+#[derive(Clone, Copy, Debug)]
 pub enum AsteroidSize {
     Small,
     Medium,
     Large,
+}
+
+impl AsteroidSize {
+    fn next(&self) -> Option<Self> {
+        match self {
+            AsteroidSize::Small => None,
+            AsteroidSize::Medium => Some(AsteroidSize::Small),
+            AsteroidSize::Large => Some(AsteroidSize::Medium),
+        }
+    }
 }
 
 #[derive(Resource)]
@@ -126,5 +140,45 @@ pub fn spawn_asteroid(
             MeshMaterial2d(material),
             Lifetime(Timer::from_seconds(ASTEROID_LIFETIME, TimerMode::Once)),
         ));
+    }
+}
+
+/// Event listener for asteroid destruction events. Shrinks and multiplies
+/// asteroids until they vanish.
+///
+/// - Large -> 2x Medium
+/// - Medium -> 2x Small
+/// - Small -> (despawned)
+///
+/// The velocity of the child asteroids is scattered somewhat, as if they were
+/// explosively pushed apart.
+pub fn split_asteroids(
+    mut destroy_events: EventReader<AsteroidDestroy>,
+    mut respawn_events: EventWriter<SpawnAsteroid>,
+    mut commands: Commands,
+    query: Query<(&Transform, &Asteroid, &Velocity)>,
+) {
+    for event in destroy_events.read() {
+        if let Ok((transform, rock, velocity)) = query.get(event.0) {
+            let next_size = rock.0.next();
+            if let Some(size) = next_size {
+                let pos = transform.translation.xy();
+                let left_offset = Vec2::from_angle(0.4);
+                let right_offset = Vec2::from_angle(-0.4);
+                respawn_events.write(SpawnAsteroid {
+                    pos,
+                    vel: left_offset.rotate(velocity.0),
+                    size,
+                });
+                respawn_events.write(SpawnAsteroid {
+                    pos,
+                    vel: right_offset.rotate(velocity.0),
+                    size,
+                });
+            }
+            // Always despawn the asteroid. New ones (may) be spawned in it's
+            // place, but this one is gone.
+            commands.entity(event.0).despawn();
+        }
     }
 }
