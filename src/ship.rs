@@ -1,6 +1,7 @@
 use crate::{
-    AngularVelocity, GameAssets,
-    event::BulletDestroy,
+    AngularVelocity, GameAssets, GameState, Lives,
+    asteroids::Asteroid,
+    event::{BulletDestroy, ShipDestroy},
     physics::{Velocity, Wrapping},
 };
 
@@ -42,5 +43,40 @@ pub fn spawn_player(mut commands: Commands, game_assets: Res<GameAssets>) {
 pub fn bullet_impact_listener(mut commands: Commands, mut events: EventReader<BulletDestroy>) {
     for event in events.read() {
         commands.entity(event.0).despawn();
+    }
+}
+
+/// Watch for [`ShipDestroy`] events and update game state accordingly.
+///
+/// - Subtract a life
+/// - Check life count. If 0, go to game-over state
+/// - Clear all asteroids
+/// - Respawn player
+pub fn ship_impact_listener(
+    mut events: EventReader<ShipDestroy>,
+    mut commands: Commands,
+    mut lives: ResMut<Lives>,
+    rocks: Query<Entity, With<Asteroid>>,
+    mut player: Single<(&mut Transform, &mut Velocity), With<Ship>>,
+    mut next_state: ResMut<NextState<GameState>>,
+) {
+    for _ in events.read() {
+        // STEP 1: Decrement lives (and maybe go to game over)
+        if lives.0 == 0 {
+            // If already at 0, game is over.
+            next_state.set(GameState::GameOver);
+        } else {
+            // Decrease life count.
+            lives.0 -= 1;
+        }
+
+        // STEP 2: Clear asteroids
+        for rock in rocks {
+            commands.entity(rock).despawn();
+        }
+
+        // STEP 3: Respawn player (teleport them to the origin)
+        player.0.translation = Vec3::ZERO;
+        player.1.0 = Vec2::ZERO;
     }
 }

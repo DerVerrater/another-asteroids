@@ -57,6 +57,7 @@ impl Plugin for AsteroidPlugin {
                 asteroids::spawn_asteroid.after(asteroids::tick_asteroid_manager),
                 asteroids::split_asteroids,
                 ship::bullet_impact_listener,
+                ship::ship_impact_listener,
                 collision_listener,
                 // TODO: Remove debug printing
                 debug_collision_event_printer,
