@@ -1,18 +1,12 @@
 use crate::{
     AngularVelocity, GameAssets, GameState, Lives,
-    objects::Asteroid,
     events::{BulletDestroy, ShipDestroy},
+    objects::{Asteroid, Ship},
     physics::{Velocity, Wrapping},
 };
 
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-
-#[derive(Component)]
-pub struct Ship;
-
-#[derive(Component)]
-pub struct Bullet;
 
 pub fn spawn_player(mut commands: Commands, game_assets: Res<GameAssets>) {
     commands

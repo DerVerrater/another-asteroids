@@ -13,9 +13,8 @@ use crate::config::{
     PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST, SHIP_THRUSTER_COLOR_ACTIVE,
     SHIP_THRUSTER_COLOR_INACTIVE, WINDOW_SIZE,
 };
-use crate::objects::Asteroid;
+use crate::objects::{Asteroid, Bullet, Ship};
 use crate::physics::AngularVelocity;
-use crate::ship::{Bullet, Ship};
 
 use bevy::prelude::*;
 use bevy_inspector_egui::InspectorOptions;
@@ -336,7 +335,7 @@ fn input_ship_shoot(
     // For now, spawn one for each press of the spacebar.
     if keyboard_input.just_pressed(KeyCode::Space) {
         commands.spawn((
-            ship::Bullet,
+            Bullet,
             Collider::ball(0.2),
             Sensor,
             ActiveEvents::COLLISION_EVENTS,
