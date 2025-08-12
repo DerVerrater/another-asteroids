@@ -69,8 +69,8 @@ pub(crate) fn wrap_entities(
 ///
 /// | Objects | Response |
 /// |-|-|
-/// | Ship & Asteroid | emits event [`ShipDestroy`](`crate::event::ShipDestroy`) |
-/// | Asteroid & Bullet | emits event [`AsteroidDestroy`](`crate::event::AsteroidDestroy`) |
+/// | Ship & Asteroid | emits event [`ShipDestroy`](`crate::events::ShipDestroy`) |
+/// | Asteroid & Bullet | emits event [`AsteroidDestroy`](`crate::events::AsteroidDestroy`) |
 /// | Asteroid & Asteroid | Nothing. Asteroids won't collide with each other |
 /// | Bullet & Bullet | Nothing. Bullets won't collide with each other (and probably can't under normal gameplay conditions) |
 /// | Bullet & Ship | Nothing. The player shouldn't be able to shoot themselves (and the Flying Saucer hasn't been impl.'d, so it's bullets don't count) |
