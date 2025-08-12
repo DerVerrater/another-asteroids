@@ -1,9 +1,13 @@
 //! Custom physics items
 //! TODO: Refactor in terms of Rapier2D, *or* implement colliders and remove it.
 
-use crate::WorldSize;
+use crate::{
+    WorldSize, events,
+    objects::{Asteroid, Bullet, Ship},
+};
 
 use bevy::prelude::*;
+use bevy_rapier2d::pipeline::CollisionEvent;
 
 #[derive(Clone, Component)]
 pub(crate) struct Velocity(pub(crate) bevy::math::Vec2);
@@ -54,6 +58,69 @@ pub(crate) fn wrap_entities(
             pos.translation.y = bottom;
         } else if pos.translation.y < bottom {
             pos.translation.y = top;
+        }
+    }
+}
+
+/// The collision event routing system.
+///
+/// When a `CollisionEvent` occurrs, this system checks which things collided
+/// and emits secondary events accordignly.
+///
+/// | Objects | Response |
+/// |-|-|
+/// | Ship & Asteroid | emits event [`ShipDestroy`](`crate::event::ShipDestroy`) |
+/// | Asteroid & Bullet | emits event [`AsteroidDestroy`](`crate::event::AsteroidDestroy`) |
+/// | Asteroid & Asteroid | Nothing. Asteroids won't collide with each other |
+/// | Bullet & Bullet | Nothing. Bullets won't collide with each other (and probably can't under normal gameplay conditions) |
+/// | Bullet & Ship | Nothing. The player shouldn't be able to shoot themselves (and the Flying Saucer hasn't been impl.'d, so it's bullets don't count) |
+pub fn collision_listener(
+    mut collisions: EventReader<CollisionEvent>,
+    mut ship_writer: EventWriter<events::ShipDestroy>,
+    mut asteroid_writer: EventWriter<events::AsteroidDestroy>,
+    mut bullet_writer: EventWriter<events::BulletDestroy>,
+    player: Single<Entity, With<Ship>>,
+    bullets: Query<&Bullet>,
+    rocks: Query<&Asteroid>,
+) {
+    for event in collisions.read() {
+        if let CollisionEvent::Started(one, two, _flags) = event {
+            // Valid collisions are:
+            //
+            // - Ship & Asteroid
+            // - Bullet & Asteroid
+            //
+            // Asteroids don't collide with each other, bullets don't collide
+            // with each other, and bullets don't collide with the player ship.
+
+            // Option 1: Ship & Asteroid
+            if *one == *player {
+                if rocks.contains(*two) {
+                    // player-asteroid collision
+                    dbg!("Writing ShipDestroy event");
+                    ship_writer.write(events::ShipDestroy);
+                } // else, we don't care
+            } else if *two == *player {
+                if rocks.contains(*one) {
+                    dbg!("Writing ShipDestroy event");
+                    ship_writer.write(events::ShipDestroy);
+                }
+            }
+
+            // Option 2: Bullet & Asteroid
+            if bullets.contains(*one) {
+                if rocks.contains(*two) {
+                    dbg!("Writing AsteroidDestroy & BulletDestroy events");
+                    asteroid_writer.write(events::AsteroidDestroy(*two));
+                    bullet_writer.write(events::BulletDestroy(*one));
+                }
+            } else if rocks.contains(*one) {
+                if bullets.contains(*two) {
+                    dbg!("Writing AsteroidDestroy & BulletDestroy events");
+                    asteroid_writer.write(events::AsteroidDestroy(*one));
+                    bullet_writer.write(events::BulletDestroy(*two));
+                }
+            }
         }
     }
 }
