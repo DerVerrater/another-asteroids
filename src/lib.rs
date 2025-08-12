@@ -1,18 +1,18 @@
-mod asteroids;
 pub mod config;
 mod events;
+mod machinery;
 mod objects;
 mod physics;
 mod preparation_widget;
 mod resources;
 mod title_screen;
 
-use crate::asteroids::AsteroidSpawner;
 use crate::config::{
     ASTEROID_SMALL_COLOR, BACKGROUND_COLOR, BULLET_COLOR, BULLET_LIFETIME, BULLET_SPEED,
     PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST, SHIP_THRUSTER_COLOR_ACTIVE,
     SHIP_THRUSTER_COLOR_INACTIVE, WINDOW_SIZE,
 };
+use crate::machinery::AsteroidSpawner;
 use crate::objects::{Bullet, Ship};
 use crate::physics::AngularVelocity;
 
@@ -56,8 +56,8 @@ impl Plugin for AsteroidPlugin {
                 input_ship_rotation,
                 input_ship_shoot,
                 physics::wrap_entities,
-                asteroids::tick_asteroid_manager,
-                objects::spawn_asteroid.after(asteroids::tick_asteroid_manager),
+                machinery::tick_asteroid_manager,
+                objects::spawn_asteroid.after(machinery::tick_asteroid_manager),
                 objects::split_asteroids,
                 objects::bullet_impact_listener,
                 objects::ship_impact_listener,

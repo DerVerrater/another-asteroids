@@ -1,5 +1,4 @@
-//! This is the module containing all the rock-related things.
-//! Not... not the whole game.
+//! These are Systems that power the main game mechanics (and some misc items to support them)
 
 use rand::{Rng, SeedableRng};
 use std::time::Duration;
