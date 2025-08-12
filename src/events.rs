@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::asteroids::AsteroidSize;
+use crate::objects::AsteroidSize;
 
 /// Signals that the player's ship has been destroyed.
 /// Used when the player collides with an asteroid.

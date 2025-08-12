@@ -1,6 +1,6 @@
 use crate::{
     AngularVelocity, GameAssets, GameState, Lives,
-    asteroids::Asteroid,
+    objects::Asteroid,
     events::{BulletDestroy, ShipDestroy},
     physics::{Velocity, Wrapping},
 };

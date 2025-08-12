@@ -1,17 +1,19 @@
 mod asteroids;
 pub mod config;
 mod events;
+mod objects;
 mod physics;
 mod preparation_widget;
 mod ship;
 mod title_screen;
 
-use crate::asteroids::{Asteroid, AsteroidSpawner};
+use crate::asteroids::{AsteroidSpawner};
 use crate::config::{
     ASTEROID_SMALL_COLOR, BACKGROUND_COLOR, BULLET_COLOR, BULLET_LIFETIME, BULLET_SPEED,
     PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST, SHIP_THRUSTER_COLOR_ACTIVE,
     SHIP_THRUSTER_COLOR_INACTIVE, WINDOW_SIZE,
 };
+use crate::objects::Asteroid;
 use crate::physics::AngularVelocity;
 use crate::ship::{Bullet, Ship};
 

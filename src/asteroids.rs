@@ -8,28 +8,8 @@ use std::time::Duration;
 use bevy::prelude::*;
 
 use crate::{
-    config::ASTEROID_LIFETIME, events::{AsteroidDestroy, SpawnAsteroid}, physics::Velocity, GameAssets, Lifetime, WorldSize
+    config::ASTEROID_LIFETIME, events::{AsteroidDestroy, SpawnAsteroid}, objects::{Asteroid, AsteroidSize}, physics::Velocity, GameAssets, Lifetime, WorldSize
 };
-
-#[derive(Component, Deref, DerefMut)]
-pub struct Asteroid(AsteroidSize);
-
-#[derive(Clone, Copy, Debug)]
-pub enum AsteroidSize {
-    Small,
-    Medium,
-    Large,
-}
-
-impl AsteroidSize {
-    fn next(&self) -> Option<Self> {
-        match self {
-            AsteroidSize::Small => None,
-            AsteroidSize::Medium => Some(AsteroidSize::Small),
-            AsteroidSize::Large => Some(AsteroidSize::Medium),
-        }
-    }
-}
 
 #[derive(Resource)]
 pub struct AsteroidSpawner {
