@@ -4,6 +4,7 @@ mod events;
 mod objects;
 mod physics;
 mod preparation_widget;
+mod resources;
 mod title_screen;
 
 use crate::asteroids::AsteroidSpawner;
@@ -16,13 +17,12 @@ use crate::objects::{Bullet, Ship};
 use crate::physics::AngularVelocity;
 
 use bevy::prelude::*;
-use bevy_inspector_egui::InspectorOptions;
-use bevy_inspector_egui::prelude::ReflectInspectorOptions;
 use bevy_rapier2d::{
     plugin::{NoUserData, RapierPhysicsPlugin},
     prelude::*,
     render::RapierDebugRenderPlugin,
 };
+use resources::{GameAssets, Lives, Score, WorldSize};
 
 pub struct AsteroidPlugin;
 
@@ -98,106 +98,8 @@ pub enum GameState {
     GameOver,    // Game has ended. Present game over dialogue and await user restart
 }
 
-#[derive(Resource, Debug, Deref, Clone, Copy)]
-struct Score(i32);
-
-impl From<Score> for String {
-    fn from(value: Score) -> Self {
-        value.to_string()
-    }
-}
-
 #[derive(Component)]
 struct Lifetime(Timer);
-
-#[derive(InspectorOptions, Reflect, Resource, Debug, Deref, Clone, Copy)]
-#[reflect(Resource, InspectorOptions)]
-struct Lives(i32);
-
-impl From<Lives> for String {
-    fn from(value: Lives) -> Self {
-        value.to_string()
-    }
-}
-
-#[derive(Resource)]
-struct WorldSize {
-    width: f32,
-    height: f32,
-}
-
-#[derive(Resource)]
-struct GameAssets {
-    meshes: [Handle<Mesh>; 5],
-    materials: [Handle<ColorMaterial>; 7],
-}
-
-impl GameAssets {
-    fn ship(&self) -> (Handle<Mesh>, Handle<ColorMaterial>) {
-        (self.meshes[0].clone(), self.materials[0].clone())
-    }
-
-    // The thruster mesh is actually just the ship mesh
-    fn thruster_mesh(&self) -> Handle<Mesh> {
-        self.meshes[0].clone()
-    }
-
-    // TODO: Look into parameterizing the material
-    // A shader uniform should be able to do this, but I don't know how to
-    // load those in Bevy.
-    fn thruster_mat_inactive(&self) -> Handle<ColorMaterial> {
-        self.materials[1].clone()
-    }
-
-    fn thruster_mat_active(&self) -> Handle<ColorMaterial> {
-        self.materials[2].clone()
-    }
-
-    fn asteroid_small(&self) -> (Handle<Mesh>, Handle<ColorMaterial>) {
-        (self.meshes[1].clone(), self.materials[1].clone())
-    }
-
-    fn asteroid_medium(&self) -> (Handle<Mesh>, Handle<ColorMaterial>) {
-        (self.meshes[2].clone(), self.materials[2].clone())
-    }
-
-    fn asteroid_large(&self) -> (Handle<Mesh>, Handle<ColorMaterial>) {
-        (self.meshes[3].clone(), self.materials[3].clone())
-    }
-
-    fn bullet(&self) -> (Handle<Mesh>, Handle<ColorMaterial>) {
-        (self.meshes[4].clone(), self.materials[6].clone())
-    }
-}
-
-impl FromWorld for GameAssets {
-    fn from_world(world: &mut World) -> Self {
-        let mut world_meshes = world.resource_mut::<Assets<Mesh>>();
-        let meshes = [
-            world_meshes.add(Triangle2d::new(
-                Vec2::new(0.5, 0.0),
-                Vec2::new(-0.5, 0.45),
-                Vec2::new(-0.5, -0.45),
-            )),
-            world_meshes.add(Circle::new(10.0)),
-            world_meshes.add(Circle::new(20.0)),
-            world_meshes.add(Circle::new(40.0)),
-            world_meshes.add(Circle::new(0.2)),
-        ];
-        let mut world_materials = world.resource_mut::<Assets<ColorMaterial>>();
-        let materials = [
-            world_materials.add(PLAYER_SHIP_COLOR),
-            world_materials.add(SHIP_THRUSTER_COLOR_INACTIVE),
-            world_materials.add(SHIP_THRUSTER_COLOR_ACTIVE),
-            world_materials.add(ASTEROID_SMALL_COLOR),
-            // TODO: asteroid medium and large colors
-            world_materials.add(ASTEROID_SMALL_COLOR),
-            world_materials.add(ASTEROID_SMALL_COLOR),
-            world_materials.add(BULLET_COLOR),
-        ];
-        GameAssets { meshes, materials }
-    }
-}
 
 fn spawn_camera(mut commands: Commands) {
     commands.spawn(Camera2d);
