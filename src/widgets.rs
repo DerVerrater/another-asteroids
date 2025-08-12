@@ -1,9 +1,19 @@
-use crate::GameState;
+use crate::{
+    GameState,
+    resources::{Lives, Score},
+};
 
 use bevy::{
     color::palettes::css::{BLACK, GREEN, LIGHT_BLUE, RED},
     prelude::*,
 };
+
+pub fn spawn_ui(mut commands: Commands, score: Res<Score>, lives: Res<Lives>) {
+    commands.spawn((
+        Text::new(format!("Score: {score:?} | Lives: {lives:?}")),
+        TextFont::from_font_size(25.0),
+    ));
+}
 
 pub fn preparation_widget_plugin(app: &mut App) {
     app.add_systems(OnEnter(GameState::GetReady), spawn_get_ready)

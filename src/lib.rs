@@ -47,7 +47,7 @@ impl Plugin for AsteroidPlugin {
         .add_systems(Startup, spawn_camera)
         .add_systems(
             OnEnter(GameState::Playing),
-            (objects::spawn_player, spawn_ui),
+            (objects::spawn_player, widgets::spawn_ui),
         )
         .add_systems(
             FixedUpdate,
@@ -185,11 +185,4 @@ fn input_ship_shoot(
             Lifetime(Timer::from_seconds(BULLET_LIFETIME, TimerMode::Once)),
         ));
     }
-}
-
-fn spawn_ui(mut commands: Commands, score: Res<Score>, lives: Res<Lives>) {
-    commands.spawn((
-        Text::new(format!("Score: {score:?} | Lives: {lives:?}")),
-        TextFont::from_font_size(25.0),
-    ));
 }
