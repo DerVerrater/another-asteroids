@@ -1,6 +1,6 @@
 mod asteroids;
 pub mod config;
-mod event;
+mod events;
 mod physics;
 mod preparation_widget;
 mod ship;
@@ -74,9 +74,9 @@ impl Plugin for AsteroidPlugin {
                 .run_if(in_state(GameState::Playing)),
         )
         .add_event::<asteroids::SpawnAsteroid>()
-        .add_event::<event::AsteroidDestroy>()
-        .add_event::<event::ShipDestroy>()
-        .add_event::<event::BulletDestroy>();
+        .add_event::<events::AsteroidDestroy>()
+        .add_event::<events::ShipDestroy>()
+        .add_event::<events::BulletDestroy>();
         app.insert_state(GameState::Playing);
     }
 }
@@ -101,9 +101,9 @@ fn debug_collision_event_printer(mut collision_events: EventReader<CollisionEven
 /// | Bullet & Ship | Nothing. The player shouldn't be able to shoot themselves (and the Flying Saucer hasn't been impl.'d, so it's bullets don't count) |
 fn collision_listener(
     mut collisions: EventReader<CollisionEvent>,
-    mut ship_writer: EventWriter<event::ShipDestroy>,
-    mut asteroid_writer: EventWriter<event::AsteroidDestroy>,
-    mut bullet_writer: EventWriter<event::BulletDestroy>,
+    mut ship_writer: EventWriter<events::ShipDestroy>,
+    mut asteroid_writer: EventWriter<events::AsteroidDestroy>,
+    mut bullet_writer: EventWriter<events::BulletDestroy>,
     player: Single<Entity, With<Ship>>,
     bullets: Query<&Bullet>,
     rocks: Query<&Asteroid>,
@@ -123,12 +123,12 @@ fn collision_listener(
                 if rocks.contains(*two) {
                     // player-asteroid collision
                     dbg!("Writing ShipDestroy event");
-                    ship_writer.write(event::ShipDestroy);
+                    ship_writer.write(events::ShipDestroy);
                 } // else, we don't care
             } else if *two == *player {
                 if rocks.contains(*one) {
                     dbg!("Writing ShipDestroy event");
-                    ship_writer.write(event::ShipDestroy);
+                    ship_writer.write(events::ShipDestroy);
                 }
             }
 
@@ -136,14 +136,14 @@ fn collision_listener(
             if bullets.contains(*one) {
                 if rocks.contains(*two) {
                     dbg!("Writing AsteroidDestroy & BulletDestroy events");
-                    asteroid_writer.write(event::AsteroidDestroy(*two));
-                    bullet_writer.write(event::BulletDestroy(*one));
+                    asteroid_writer.write(events::AsteroidDestroy(*two));
+                    bullet_writer.write(events::BulletDestroy(*one));
                 }
             } else if rocks.contains(*one) {
                 if bullets.contains(*two) {
                     dbg!("Writing AsteroidDestroy & BulletDestroy events");
-                    asteroid_writer.write(event::AsteroidDestroy(*one));
-                    bullet_writer.write(event::BulletDestroy(*two));
+                    asteroid_writer.write(events::AsteroidDestroy(*one));
+                    bullet_writer.write(events::BulletDestroy(*two));
                 }
             }
         }

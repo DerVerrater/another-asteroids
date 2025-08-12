@@ -8,7 +8,7 @@ use std::time::Duration;
 use bevy::prelude::*;
 
 use crate::{
-    GameAssets, Lifetime, WorldSize, config::ASTEROID_LIFETIME, event::AsteroidDestroy,
+    GameAssets, Lifetime, WorldSize, config::ASTEROID_LIFETIME, events::AsteroidDestroy,
     physics::Velocity,
 };
 
