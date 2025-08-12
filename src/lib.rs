@@ -4,7 +4,6 @@ mod machinery;
 mod objects;
 mod physics;
 mod resources;
-mod title_screen;
 mod widgets;
 
 use crate::config::{
@@ -30,7 +29,7 @@ pub struct AsteroidPlugin;
 impl Plugin for AsteroidPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
-            title_screen::GameMenuPlugin,
+            widgets::GameMenuPlugin,
             widgets::preparation_widget_plugin,
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(10.0),
             RapierDebugRenderPlugin::default(),
