@@ -21,9 +21,10 @@ use bevy::{
 use bevy_rapier2d::prelude::{ActiveCollisionTypes, ActiveEvents, Collider, Sensor};
 
 use crate::{
-    AngularVelocity, GameAssets, GameState, Lifetime, Lives,
+    AngularVelocity, GameAssets, GameState, Lives,
     config::ASTEROID_LIFETIME,
     events::{AsteroidDestroy, BulletDestroy, ShipDestroy, SpawnAsteroid},
+    machinery::Lifetime,
     physics::{Velocity, Wrapping},
 };
 

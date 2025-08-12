@@ -76,3 +76,19 @@ pub fn tick_asteroid_manager(
         events.write(SpawnAsteroid { pos, vel, size });
     }
 }
+
+#[derive(Component)]
+pub struct Lifetime(pub Timer);
+
+pub fn tick_lifetimes(
+    mut commands: Commands,
+    time: Res<Time>,
+    query: Query<(Entity, &mut Lifetime)>,
+) {
+    for (e, mut life) in query {
+        life.0.tick(time.delta());
+        if life.0.just_finished() {
+            commands.entity(e).despawn();
+        }
+    }
+}

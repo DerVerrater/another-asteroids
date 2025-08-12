@@ -22,6 +22,7 @@ use bevy_rapier2d::{
     prelude::*,
     render::RapierDebugRenderPlugin,
 };
+use machinery::Lifetime;
 use resources::{GameAssets, Lives, Score, WorldSize};
 
 pub struct AsteroidPlugin;
@@ -64,7 +65,7 @@ impl Plugin for AsteroidPlugin {
                 physics::collision_listener,
                 // TODO: Remove debug printing
                 debug_collision_event_printer,
-                tick_lifetimes,
+                machinery::tick_lifetimes,
             )
                 .run_if(in_state(GameState::Playing)),
         )
@@ -97,9 +98,6 @@ pub enum GameState {
     Playing,     // Player has started the game. Run the main loop
     GameOver,    // Game has ended. Present game over dialogue and await user restart
 }
-
-#[derive(Component)]
-struct Lifetime(Timer);
 
 fn spawn_camera(mut commands: Commands) {
     commands.spawn(Camera2d);
@@ -195,13 +193,4 @@ fn spawn_ui(mut commands: Commands, score: Res<Score>, lives: Res<Lives>) {
         Text::new(format!("Score: {score:?} | Lives: {lives:?}")),
         TextFont::from_font_size(25.0),
     ));
-}
-
-fn tick_lifetimes(mut commands: Commands, time: Res<Time>, query: Query<(Entity, &mut Lifetime)>) {
-    for (e, mut life) in query {
-        life.0.tick(time.delta());
-        if life.0.just_finished() {
-            commands.entity(e).despawn();
-        }
-    }
 }
