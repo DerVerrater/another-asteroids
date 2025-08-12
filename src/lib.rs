@@ -4,7 +4,6 @@ mod events;
 mod objects;
 mod physics;
 mod preparation_widget;
-mod ship;
 mod title_screen;
 
 use crate::asteroids::AsteroidSpawner;
@@ -46,7 +45,10 @@ impl Plugin for AsteroidPlugin {
         .insert_resource(AsteroidSpawner::new())
         .init_resource::<GameAssets>()
         .add_systems(Startup, spawn_camera)
-        .add_systems(OnEnter(GameState::Playing), (ship::spawn_player, spawn_ui))
+        .add_systems(
+            OnEnter(GameState::Playing),
+            (objects::spawn_player, spawn_ui),
+        )
         .add_systems(
             FixedUpdate,
             (
@@ -57,8 +59,8 @@ impl Plugin for AsteroidPlugin {
                 asteroids::tick_asteroid_manager,
                 objects::spawn_asteroid.after(asteroids::tick_asteroid_manager),
                 objects::split_asteroids,
-                ship::bullet_impact_listener,
-                ship::ship_impact_listener,
+                objects::bullet_impact_listener,
+                objects::ship_impact_listener,
                 collision_listener,
                 // TODO: Remove debug printing
                 debug_collision_event_printer,
