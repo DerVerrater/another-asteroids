@@ -3,9 +3,9 @@ mod events;
 mod machinery;
 mod objects;
 mod physics;
-mod preparation_widget;
 mod resources;
 mod title_screen;
+mod widgets;
 
 use crate::config::{
     ASTEROID_SMALL_COLOR, BACKGROUND_COLOR, BULLET_COLOR, BULLET_LIFETIME, BULLET_SPEED,
@@ -31,7 +31,7 @@ impl Plugin for AsteroidPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
             title_screen::GameMenuPlugin,
-            preparation_widget::preparation_widget_plugin,
+            widgets::preparation_widget_plugin,
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(10.0),
             RapierDebugRenderPlugin::default(),
         ))
