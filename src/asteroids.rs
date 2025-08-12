@@ -8,8 +8,7 @@ use std::time::Duration;
 use bevy::prelude::*;
 
 use crate::{
-    GameAssets, Lifetime, WorldSize, config::ASTEROID_LIFETIME, events::AsteroidDestroy,
-    physics::Velocity,
+    config::ASTEROID_LIFETIME, events::{AsteroidDestroy, SpawnAsteroid}, physics::Velocity, GameAssets, Lifetime, WorldSize
 };
 
 #[derive(Component, Deref, DerefMut)]
@@ -49,13 +48,6 @@ impl AsteroidSpawner {
             timer: Timer::new(Duration::from_secs(3), TimerMode::Repeating),
         }
     }
-}
-
-#[derive(Event)]
-pub struct SpawnAsteroid {
-    pos: Vec2,
-    vel: Vec2,
-    size: AsteroidSize,
 }
 
 /// Update the asteroid spawn timer and spawn any asteroids

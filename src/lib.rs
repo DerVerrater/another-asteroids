@@ -73,7 +73,7 @@ impl Plugin for AsteroidPlugin {
             )
                 .run_if(in_state(GameState::Playing)),
         )
-        .add_event::<asteroids::SpawnAsteroid>()
+        .add_event::<events::SpawnAsteroid>()
         .add_event::<events::AsteroidDestroy>()
         .add_event::<events::ShipDestroy>()
         .add_event::<events::BulletDestroy>();
