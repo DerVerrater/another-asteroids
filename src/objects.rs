@@ -1,8 +1,11 @@
 //! This module contains all the "things" in the game.
-//! 
+//!
 //! Asteroids, the player's ship, and such.
 
-use bevy::{ecs::component::Component, prelude::{Deref, DerefMut}};
+use bevy::{
+    ecs::component::Component,
+    prelude::{Deref, DerefMut},
+};
 
 #[derive(Component, Deref, DerefMut)]
 pub struct Asteroid(pub AsteroidSize);

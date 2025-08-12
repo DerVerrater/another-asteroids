@@ -8,7 +8,11 @@ use std::time::Duration;
 use bevy::prelude::*;
 
 use crate::{
-    config::ASTEROID_LIFETIME, events::{AsteroidDestroy, SpawnAsteroid}, objects::{Asteroid, AsteroidSize}, physics::Velocity, GameAssets, Lifetime, WorldSize
+    GameAssets, Lifetime, WorldSize,
+    config::ASTEROID_LIFETIME,
+    events::{AsteroidDestroy, SpawnAsteroid},
+    objects::{Asteroid, AsteroidSize},
+    physics::Velocity,
 };
 
 #[derive(Resource)]
