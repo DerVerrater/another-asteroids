@@ -81,7 +81,7 @@ impl Plugin for AsteroidPlugin {
         .add_event::<events::AsteroidDestroy>()
         .add_event::<events::ShipDestroy>()
         .add_event::<events::BulletDestroy>();
-        app.insert_state(GameState::GameOver);
+        app.insert_state(GameState::TitleScreen);
     }
 }
 

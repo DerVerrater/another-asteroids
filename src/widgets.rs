@@ -47,7 +47,7 @@ impl Plugin for PluginGameOver {
             .add_systems(OnExit(GameState::GameOver), despawn::<MarkerGameOver>)
             .add_systems(
                 Update,
-                operate_gameover_ui.run_if(in_state(GameState::GameOver)),
+                operate_gameover_ui //.run_if(in_state(GameState::GameOver)),
             );
     }
 }
@@ -72,6 +72,7 @@ struct MarkerGameOver;
 #[derive(Component)]
 enum GameOverMenuAction {
     ToMainMenu,
+    StartGame,
     Quit,
 }
 
@@ -93,6 +94,31 @@ fn despawn<T: Component>(mut commands: Commands, to_despawn: Query<Entity, With<
     for entity in to_despawn {
         commands.entity(entity).despawn();
     }
+}
+
+/// Utility function for creating a standard button.
+fn button_bundle(text: &str) -> impl Bundle {
+    (
+        Button,
+        // TODO: Generic action
+        Node {
+            width: Val::Px(150.0),
+            height: Val::Px(65.0),
+            border: UiRect::all(Val::Px(2.0)),
+            justify_content: JustifyContent::Center,
+            align_items: AlignItems::Center,
+            margin: UiRect::all(Val::Px(5.0)),
+            ..default()
+        },
+        BorderColor(Color::BLACK),
+        BorderRadius::MAX,
+        BackgroundColor(UI_BUTTON_NORMAL),
+        children![(
+            Text::new(text),
+            TextColor(Color::srgb(0.9, 0.9, 0.9)),
+            TextShadow::default(),
+        )],
+    )
 }
 
 fn spawn_menu(mut commands: Commands) {
@@ -120,6 +146,12 @@ fn spawn_menu(mut commands: Commands) {
                 TextFont::from_font_size(20.0),
                 TextColor(Color::srgb(0.7, 0.7, 0.7)),
                 TextShadow::default(),
+            ));
+            cmds.spawn((
+                button_bundle("Start Game"), GameOverMenuAction::StartGame
+            ));
+            cmds.spawn((
+                button_bundle("Quit"), GameOverMenuAction::Quit
             ));
         });
 }
@@ -173,48 +205,8 @@ fn spawn_gameover_ui(mut commands: Commands) {
             ..default()
         },
         children![
-            (
-                Button,
-                GameOverMenuAction::ToMainMenu,
-                Node {
-                    width: Val::Px(150.0),
-                    height: Val::Px(65.0),
-                    border: UiRect::all(Val::Px(2.0)),
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    margin: UiRect::all(Val::Px(5.0)),
-                    ..default()
-                },
-                BorderColor(Color::BLACK),
-                BorderRadius::MAX,
-                BackgroundColor(UI_BUTTON_NORMAL),
-                children![(
-                    Text::new("Main Menu"),
-                    TextColor(Color::srgb(0.9, 0.9, 0.9)),
-                    TextShadow::default(),
-                )]
-            ),
-            (
-                Button,
-                GameOverMenuAction::Quit,
-                Node {
-                    width: Val::Px(150.0),
-                    height: Val::Px(65.0),
-                    border: UiRect::all(Val::Px(2.0)),
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    margin: UiRect::all(Val::Px(5.0)),
-                    ..default()
-                },
-                BorderColor(Color::BLACK),
-                BorderRadius::MAX,
-                BackgroundColor(UI_BUTTON_NORMAL),
-                children![(
-                    Text::new("Quit"),
-                    TextColor(Color::srgb(0.9, 0.9, 0.9)),
-                    TextShadow::default(),
-                )]
-            )
+            (button_bundle("Main Menu"), GameOverMenuAction::ToMainMenu,),
+            (button_bundle("Quit"), GameOverMenuAction::Quit),
         ],
     ));
 }
@@ -272,6 +264,9 @@ fn operate_gameover_ui(
                 match menu_action {
                     GameOverMenuAction::ToMainMenu => {
                         game_state.set(GameState::TitleScreen);
+                    }
+                    GameOverMenuAction::StartGame => {
+                        game_state.set(GameState::Playing);
                     }
                     GameOverMenuAction::Quit => {
                         app_exit_events.write(AppExit::Success);
