@@ -18,7 +18,7 @@ impl Plugin for PluginGameMenu {
             .add_systems(OnExit(GameState::TitleScreen), despawn::<MarkerMainMenu>)
             .add_systems(
                 Update,
-                handle_spacebar.run_if(in_state(GameState::TitleScreen)),
+                (handle_spacebar, operate_buttons).run_if(in_state(GameState::TitleScreen)),
             );
     }
 }
@@ -38,7 +38,7 @@ impl Plugin for PluginGetReady {
     }
 }
 
-/// Plugin for the game-over screen (TODO)
+/// Plugin for the game-over screen
 pub struct PluginGameOver;
 
 impl Plugin for PluginGameOver {
@@ -47,7 +47,7 @@ impl Plugin for PluginGameOver {
             .add_systems(OnExit(GameState::GameOver), despawn::<MarkerGameOver>)
             .add_systems(
                 Update,
-                operate_gameover_ui //.run_if(in_state(GameState::GameOver)),
+                operate_buttons.run_if(in_state(GameState::GameOver)),
             );
     }
 }
@@ -70,7 +70,7 @@ struct MarkerGameOver;
 /// Attach this component to a button and [`PluginGameOver`] will use it to
 /// decide what to do when that button is pressed.
 #[derive(Component)]
-enum GameOverMenuAction {
+enum ButtonMenuAction {
     ToMainMenu,
     StartGame,
     Quit,
@@ -147,12 +147,8 @@ fn spawn_menu(mut commands: Commands) {
                 TextColor(Color::srgb(0.7, 0.7, 0.7)),
                 TextShadow::default(),
             ));
-            cmds.spawn((
-                button_bundle("Start Game"), GameOverMenuAction::StartGame
-            ));
-            cmds.spawn((
-                button_bundle("Quit"), GameOverMenuAction::Quit
-            ));
+            cmds.spawn((button_bundle("Start Game"), ButtonMenuAction::StartGame));
+            cmds.spawn((button_bundle("Quit"), ButtonMenuAction::Quit));
         });
 }
 
@@ -205,8 +201,8 @@ fn spawn_gameover_ui(mut commands: Commands) {
             ..default()
         },
         children![
-            (button_bundle("Main Menu"), GameOverMenuAction::ToMainMenu,),
-            (button_bundle("Quit"), GameOverMenuAction::Quit),
+            (button_bundle("Main Menu"), ButtonMenuAction::ToMainMenu,),
+            (button_bundle("Quit"), ButtonMenuAction::Quit),
         ],
     ));
 }
@@ -236,19 +232,24 @@ fn animate_get_ready_widget(
     }
 }
 
-/// Handles interaction and performs updates to the game-over UI.
+/// Handles interactions with the menu buttons.
 ///
-/// Used by [`PluginGameOver`] while in the [`GameState::GameOver`] state.
+/// The buttons are used by the main menu and the game-over menu to change
+/// between game states.
 ///
-/// Mostly a button input handler, but it also makes for a convenient single
-/// place to keep all system logic for this plugin.
-fn operate_gameover_ui(
+/// Button animation and action handling is done entirely within this system.
+///
+/// There are no checks for current state. If a "quit" button was put somewhere
+/// on the HUD, this system would quit the game. The same will happen for
+/// returning to the title screen. This should be useful for making a pause
+/// menu, too.
+fn operate_buttons(
     mut interactions: Query<
         (
             &Interaction,
             &mut BackgroundColor,
             &mut BorderColor,
-            &GameOverMenuAction,
+            &ButtonMenuAction,
         ),
         (Changed<Interaction>, With<Button>),
     >,
@@ -262,13 +263,13 @@ fn operate_gameover_ui(
                 *color = UI_BUTTON_PRESSED.into();
                 border_color.0 = RED.into();
                 match menu_action {
-                    GameOverMenuAction::ToMainMenu => {
+                    ButtonMenuAction::ToMainMenu => {
                         game_state.set(GameState::TitleScreen);
                     }
-                    GameOverMenuAction::StartGame => {
+                    ButtonMenuAction::StartGame => {
                         game_state.set(GameState::Playing);
                     }
-                    GameOverMenuAction::Quit => {
+                    ButtonMenuAction::Quit => {
                         app_exit_events.write(AppExit::Success);
                     }
                 }
