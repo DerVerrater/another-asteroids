@@ -55,7 +55,7 @@ pub fn tick_asteroid_manager(
         let spawn_angle = rng.random_range(0.0..(std::f32::consts::PI * 2.0));
         // Rho will be the radius of a circle bordering the viewport, multiplied by 1.2
         // TODO: Use view diagonal to get a minimally sized circle around the play area
-        let spawn_distance = play_area.width.max(play_area.height) / 2.0;
+        let spawn_distance = play_area.x.max(play_area.y) / 2.0;
 
         // Convert polar to Cartesian, use as position
         let pos = Vec2::new(

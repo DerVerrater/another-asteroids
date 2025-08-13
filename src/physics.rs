@@ -56,9 +56,9 @@ pub(crate) fn wrap_entities(
     mut query: Query<&mut Transform, With<Wrapping>>,
     world_size: Res<WorldSize>,
 ) {
-    let right = world_size.width / 2.0;
+    let right = world_size.x / 2.0;
     let left = -right;
-    let top = world_size.height / 2.0;
+    let top = world_size.y / 2.0;
     let bottom = -top;
 
     for mut pos in query.iter_mut() {

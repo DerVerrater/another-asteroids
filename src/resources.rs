@@ -10,7 +10,7 @@ use bevy::{
         Vec2,
         primitives::{Circle, Triangle2d},
     },
-    prelude::{Deref, Reflect, ReflectResource},
+    prelude::{Deref, DerefMut, Reflect, ReflectResource},
     render::mesh::Mesh,
     sprite::ColorMaterial,
 };
@@ -19,7 +19,7 @@ use bevy_inspector_egui::inspector_options::ReflectInspectorOptions;
 
 use crate::{
     ASTEROID_SMALL_COLOR, BULLET_COLOR, PLAYER_SHIP_COLOR, SHIP_THRUSTER_COLOR_ACTIVE,
-    SHIP_THRUSTER_COLOR_INACTIVE,
+    SHIP_THRUSTER_COLOR_INACTIVE, config::WINDOW_SIZE,
 };
 
 #[derive(Resource, Debug, Deref, Clone, Copy)]
@@ -41,10 +41,13 @@ impl From<Lives> for String {
     }
 }
 
-#[derive(Resource)]
-pub struct WorldSize {
-    pub width: f32,
-    pub height: f32,
+#[derive(Deref, DerefMut, Resource)]
+pub struct WorldSize(Vec2);
+
+impl Default for WorldSize {
+    fn default() -> Self {
+        WorldSize(Vec2::new(WINDOW_SIZE.x, WINDOW_SIZE.y))
+    }
 }
 
 #[derive(Resource)]

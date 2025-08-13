@@ -40,10 +40,7 @@ impl Plugin for AsteroidPlugin {
             RapierDebugRenderPlugin::default(),
         ))
         .insert_resource(ClearColor(BACKGROUND_COLOR))
-        .insert_resource(WorldSize {
-            width: WINDOW_SIZE.x,
-            height: WINDOW_SIZE.y,
-        })
+        .insert_resource(WorldSize::default())
         .insert_resource(Lives(3))
         .register_type::<Lives>()
         .insert_resource(Score(0))
