@@ -8,21 +8,42 @@ use bevy::{
     prelude::*,
 };
 
-pub fn spawn_ui(mut commands: Commands, score: Res<Score>, lives: Res<Lives>) {
-    commands.spawn((
-        Text::new(format!("Score: {score:?} | Lives: {lives:?}")),
-        TextFont::from_font_size(25.0),
-    ));
+/// Plugin for the main menu
+pub struct PluginGameMenu;
+
+impl Plugin for PluginGameMenu {
+    fn build(&self, app: &mut App) {
+        app.add_systems(OnEnter(GameState::TitleScreen), spawn_menu)
+            .add_systems(OnExit(GameState::TitleScreen), despawn_menu)
+            .add_systems(
+                Update,
+                handle_spacebar.run_if(in_state(GameState::TitleScreen)),
+            );
+    }
 }
 
-pub fn preparation_widget_plugin(app: &mut App) {
-    app.add_systems(OnEnter(GameState::GetReady), spawn_get_ready)
-        .add_systems(OnExit(GameState::GetReady), despawn_get_ready)
-        .add_systems(
-            Update,
-            (animate_get_ready_widget).run_if(in_state(GameState::GetReady)),
-        )
-        .insert_resource(ReadySetGoTimer(Timer::from_seconds(3.0, TimerMode::Once)));
+/// Plugin for the "get ready" period as gameplay starts.
+pub struct PluginGetReady;
+
+impl Plugin for PluginGetReady {
+    fn build(&self, app: &mut App) {
+        app.add_systems(OnEnter(GameState::GetReady), spawn_get_ready)
+            .add_systems(OnExit(GameState::GetReady), despawn_get_ready)
+            .add_systems(
+                Update,
+                (animate_get_ready_widget).run_if(in_state(GameState::GetReady)),
+            )
+            .insert_resource(ReadySetGoTimer(Timer::from_seconds(3.0, TimerMode::Once)));
+    }
+}
+
+/// Plugin for the game-over screen (TODO)
+pub struct PluginGameOver;
+
+impl Plugin for PluginGameOver {
+    fn build(&self, app: &mut App) {
+        todo!();
+    }
 }
 
 /// Marker component for things on the get-ready indicator
@@ -108,19 +129,6 @@ fn animate_get_ready_widget(
     }
 }
 
-pub struct GameMenuPlugin;
-
-impl Plugin for GameMenuPlugin {
-    fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(GameState::TitleScreen), spawn_menu)
-            .add_systems(OnExit(GameState::TitleScreen), despawn_menu)
-            .add_systems(
-                Update,
-                handle_spacebar.run_if(in_state(GameState::TitleScreen)),
-            );
-    }
-}
-
 // Marker component for the title screen UI entity.
 // This way, a query for the TitleUI can be used to despawn the title screen
 #[derive(Component)]
@@ -157,4 +165,11 @@ fn handle_spacebar(input: Res<ButtonInput<KeyCode>>, mut game_state: ResMut<Next
     if input.just_pressed(KeyCode::Space) {
         game_state.set(GameState::GetReady);
     }
+}
+
+pub fn spawn_ui(mut commands: Commands, score: Res<Score>, lives: Res<Lives>) {
+    commands.spawn((
+        Text::new(format!("Score: {score:?} | Lives: {lives:?}")),
+        TextFont::from_font_size(25.0),
+    ));
 }

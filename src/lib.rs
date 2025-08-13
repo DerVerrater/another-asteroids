@@ -34,8 +34,8 @@ pub struct AsteroidPlugin;
 impl Plugin for AsteroidPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
-            widgets::GameMenuPlugin,
-            widgets::preparation_widget_plugin,
+            widgets::PluginGameMenu,
+            widgets::PluginGetReady,
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(10.0),
             RapierDebugRenderPlugin::default(),
         ))
