@@ -15,7 +15,7 @@ pub struct PluginGameMenu;
 impl Plugin for PluginGameMenu {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(GameState::TitleScreen), spawn_menu)
-            .add_systems(OnExit(GameState::TitleScreen), despawn::<TitleUI>)
+            .add_systems(OnExit(GameState::TitleScreen), despawn::<MarkerMainMenu>)
             .add_systems(
                 Update,
                 handle_spacebar.run_if(in_state(GameState::TitleScreen)),
@@ -55,7 +55,7 @@ impl Plugin for PluginGameOver {
 // Marker component for the title screen UI entity.
 // This way, a query for the TitleUI can be used to despawn the title screen
 #[derive(Component)]
-struct TitleUI;
+struct MarkerMainMenu;
 
 /// Marker component for things on the get-ready indicator
 #[derive(Component)]
@@ -98,7 +98,7 @@ fn despawn<T: Component>(mut commands: Commands, to_despawn: Query<Entity, With<
 fn spawn_menu(mut commands: Commands) {
     commands
         .spawn((
-            TitleUI,
+            MarkerMainMenu,
             Node {
                 flex_direction: FlexDirection::Column,
                 ..Default::default()
