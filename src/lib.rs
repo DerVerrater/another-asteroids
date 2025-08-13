@@ -1,3 +1,7 @@
+//! Asteroids, implemented as a Bevy plugin.
+//! 
+//! Compile-time configurables can be found in the [`config`] module.
+
 pub mod config;
 mod events;
 mod machinery;
@@ -24,6 +28,7 @@ use bevy_rapier2d::{
 use machinery::Lifetime;
 use resources::{GameAssets, Lives, Score, WorldSize};
 
+/// The main game plugin.
 pub struct AsteroidPlugin;
 
 impl Plugin for AsteroidPlugin {
@@ -90,6 +95,7 @@ fn debug_collision_event_printer(mut collision_events: EventReader<CollisionEven
     }
 }
 
+/// The game's main state tracking mechanism, registered with Bevy as a [`State`](`bevy::prelude::State`).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, States)]
 pub enum GameState {
     TitleScreen, // Program is started. Present title screen and await user start
@@ -102,9 +108,9 @@ fn spawn_camera(mut commands: Commands) {
     commands.spawn(Camera2d);
 }
 
-/*
- Checks if "W" is pressed and increases velocity accordingly.
-*/
+/// Player's thruster control system.
+/// 
+/// Checks if "W" is pressed and increases velocity accordingly.
 fn input_ship_thruster(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut query: Query<(&mut physics::Velocity, &Transform, &mut Children), With<Ship>>,
@@ -135,10 +141,10 @@ fn input_ship_thruster(
     }
 }
 
-/*
- Checks if "A" or "D" is pressed and updates the player's Rotation component accordingly
- Does *not* rotate the graphical widget! (that's done by the `apply_rotation_to_mesh` system)
-*/
+/// Player's rotation control system.
+/// 
+/// Checks if "A" or "D" is pressed and updates the player's [`AngularVelocity`]
+/// component accordingly.
 fn input_ship_rotation(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut query: Query<&mut AngularVelocity, With<Ship>>,
@@ -157,6 +163,12 @@ fn input_ship_rotation(
     }
 }
 
+/// Player's gun trigger.
+/// 
+/// Checks if the spacebar has just been pressed, spawning a bullet if so.
+/// 
+/// TODO: Hook up a timer to control weapon fire-rate. Something will have to
+/// tick those timers. Maybe this system?
 fn input_ship_shoot(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     ship: Single<(&Transform, &physics::Velocity), With<Ship>>,
