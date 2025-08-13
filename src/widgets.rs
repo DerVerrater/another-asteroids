@@ -141,6 +141,7 @@ fn spawn_gameover_ui(mut commands: Commands) {
         children![
             (
                 Button,
+                GameOverMenuAction::ToMainMenu,
                 Node {
                     width: Val::Px(150.0),
                     height: Val::Px(65.0),
@@ -161,6 +162,7 @@ fn spawn_gameover_ui(mut commands: Commands) {
             ),
             (
                 Button,
+                GameOverMenuAction::Quit,
                 Node {
                     width: Val::Px(150.0),
                     height: Val::Px(65.0),
@@ -216,17 +218,31 @@ fn animate_get_ready_widget(
 /// place to keep all system logic for this plugin.
 fn operate_gameover_ui(
     mut interactions: Query<
-        (&Interaction, &mut BackgroundColor, &mut BorderColor),
+        (
+            &Interaction,
+            &mut BackgroundColor,
+            &mut BorderColor,
+            &GameOverMenuAction,
+        ),
         (Changed<Interaction>, With<Button>),
     >,
+    mut game_state: ResMut<NextState<GameState>>,
+    mut app_exit_events: EventWriter<AppExit>,
 ) {
     // TODO: Better colors. These are taken from the example and they're ugly.
-    // TODO: Read the menu action enum component and take that action.
-    for (interaction, mut color, mut border_color) in &mut interactions {
+    for (interaction, mut color, mut border_color, menu_action) in &mut interactions {
         match *interaction {
             Interaction::Pressed => {
                 *color = UI_BUTTON_PRESSED.into();
                 border_color.0 = RED.into();
+                match menu_action {
+                    GameOverMenuAction::ToMainMenu => {
+                        game_state.set(GameState::TitleScreen);
+                    }
+                    GameOverMenuAction::Quit => {
+                        app_exit_events.write(AppExit::Success);
+                    }
+                }
             }
             Interaction::Hovered => {
                 *color = UI_BUTTON_HOVERED.into();
