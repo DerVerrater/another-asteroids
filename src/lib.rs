@@ -13,7 +13,7 @@ mod widgets;
 use crate::config::{
     ASTEROID_SMALL_COLOR, BACKGROUND_COLOR, BULLET_COLOR, BULLET_LIFETIME, BULLET_SPEED,
     PLAYER_SHIP_COLOR, SHIP_ROTATION, SHIP_THRUST, SHIP_THRUSTER_COLOR_ACTIVE,
-    SHIP_THRUSTER_COLOR_INACTIVE, WINDOW_SIZE,
+    SHIP_THRUSTER_COLOR_INACTIVE,
 };
 use crate::machinery::AsteroidSpawner;
 use crate::objects::{Bullet, Ship};
@@ -64,8 +64,6 @@ impl Plugin for AsteroidPlugin {
                 objects::bullet_impact_listener,
                 objects::ship_impact_listener,
                 physics::collision_listener,
-                // TODO: Remove debug printing
-                debug_collision_event_printer,
                 machinery::tick_lifetimes,
             )
                 .run_if(in_state(GameState::Playing)),
@@ -83,12 +81,6 @@ impl Plugin for AsteroidPlugin {
         .add_event::<events::ShipDestroy>()
         .add_event::<events::BulletDestroy>();
         app.insert_state(GameState::Playing);
-    }
-}
-
-fn debug_collision_event_printer(mut collision_events: EventReader<CollisionEvent>) {
-    for event in collision_events.read() {
-        dbg!(event);
     }
 }
 
