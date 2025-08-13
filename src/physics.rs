@@ -1,5 +1,19 @@
 //! Custom physics items
+//!
 //! TODO: Refactor in terms of Rapier2D, *or* implement colliders and remove it.
+//!
+//! Position, both translation and rotation, are tracked by the built-in
+//! Bevy [`Transform`] component. This module adds a (Linear) [`Velocity`] and
+//! [`AngularVelocity`] component to the mix.
+//! These two components are operated by simple integrator systems to
+//! accumulate translation and rotation from the velocities.
+//!
+//! The [`Wrapping`] component marks things that should wrap around the world
+//! boundaries. It's a kind of physical property of this world, so I'm putting
+//! it here.
+//!
+//! Collisions are also considered physics. After all, I got *a physics engine*
+//! to detect them for me (so that I don't have to write clipping code).
 
 use crate::{
     WorldSize, events,
