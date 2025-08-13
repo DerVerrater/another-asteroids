@@ -1,5 +1,8 @@
-//! These are Systems that power the main game mechanics (and some misc items to support them)
-
+//! Systems, Components, and any other items for powering the game logic.
+//! 
+//! Where the objects (ship, asteroid, etc) carry their own behavioral systems,
+//! the *game* keeps its main logic here. Its for ambient behaviors, like
+//! asteroid spawning, or eventually the flying saucer spawns.
 use rand::{Rng, SeedableRng};
 use std::time::Duration;
 
@@ -7,6 +10,12 @@ use bevy::prelude::*;
 
 use crate::{WorldSize, events::SpawnAsteroid, objects::AsteroidSize};
 
+/// Asteroid spawning parameters and state.
+/// 
+/// This struct keeps track of the rng and timer for spawning asteroids. In the
+/// future it may contain additional fields to allow for more control.
+/// 
+/// It's values are operated by the [`tick_asteroid_manager`] system.
 #[derive(Resource)]
 pub struct AsteroidSpawner {
     rng: std::sync::Mutex<rand::rngs::StdRng>,
@@ -26,8 +35,8 @@ impl AsteroidSpawner {
     }
 }
 
-/// Update the asteroid spawn timer and spawn any asteroids
-/// that are due this frame.
+/// Update the asteroid spawn timer in the [`AsteroidSpawner`] resource, and
+/// spawns any asteroids that are due this frame.
 pub fn tick_asteroid_manager(
     mut events: EventWriter<SpawnAsteroid>,
     mut spawner: ResMut<AsteroidSpawner>,
@@ -77,9 +86,11 @@ pub fn tick_asteroid_manager(
     }
 }
 
+/// Sets a lifetime on an entity to automatically delete it after expiration.
 #[derive(Component)]
 pub struct Lifetime(pub Timer);
 
+/// System to tick the [`Lifetime`] timers and despawn expired entities.
 pub fn tick_lifetimes(
     mut commands: Commands,
     time: Res<Time>,
