@@ -14,7 +14,7 @@ pub struct PluginGameMenu;
 impl Plugin for PluginGameMenu {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(GameState::TitleScreen), spawn_menu)
-            .add_systems(OnExit(GameState::TitleScreen), despawn_menu)
+            .add_systems(OnExit(GameState::TitleScreen), despawn::<TitleUI>)
             .add_systems(
                 Update,
                 handle_spacebar.run_if(in_state(GameState::TitleScreen)),
@@ -28,7 +28,7 @@ pub struct PluginGetReady;
 impl Plugin for PluginGetReady {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(GameState::GetReady), spawn_get_ready)
-            .add_systems(OnExit(GameState::GetReady), despawn_get_ready)
+            .add_systems(OnExit(GameState::GetReady), despawn::<OnReadySetGo>)
             .add_systems(
                 Update,
                 (animate_get_ready_widget).run_if(in_state(GameState::GetReady)),
@@ -62,6 +62,14 @@ struct CountdownText;
 #[derive(Component)]
 struct CountdownBar;
 
+/// Despawns entities matching the generic argument. Intended to remove UI
+/// elements.
+fn despawn<T: Component>(mut commands: Commands, to_despawn: Query<Entity, With<T>>) {
+    for entity in to_despawn {
+        commands.entity(entity).despawn();
+    }
+}
+
 fn spawn_get_ready(mut commands: Commands) {
     commands.spawn((
         OnReadySetGo, // marker, so this can be de-spawned properly
@@ -94,14 +102,6 @@ fn spawn_get_ready(mut commands: Commands) {
             )
         ],
     ));
-}
-
-// TODO: Replace this with a generic somewhere else in the crate
-// want: `despawn_screen::<OnReadySetGo>>()`
-fn despawn_get_ready(mut commands: Commands, to_despawn: Query<Entity, With<OnReadySetGo>>) {
-    for entity in to_despawn {
-        commands.entity(entity).despawn();
-    }
 }
 
 fn animate_get_ready_widget(
@@ -153,12 +153,6 @@ fn spawn_menu(mut commands: Commands) {
                 TextFont::from_font_size(40.0),
             ));
         });
-}
-
-fn despawn_menu(mut commands: Commands, to_despawn: Query<Entity, With<TitleUI>>) {
-    for entity in &to_despawn {
-        commands.entity(entity).despawn();
-    }
 }
 
 fn handle_spacebar(input: Res<ButtonInput<KeyCode>>, mut game_state: ResMut<NextState<GameState>>) {
