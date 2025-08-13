@@ -1,5 +1,5 @@
 //! Asteroids, implemented as a Bevy plugin.
-//! 
+//!
 //! Compile-time configurables can be found in the [`config`] module.
 
 pub mod config;
@@ -109,7 +109,7 @@ fn spawn_camera(mut commands: Commands) {
 }
 
 /// Player's thruster control system.
-/// 
+///
 /// Checks if "W" is pressed and increases velocity accordingly.
 fn input_ship_thruster(
     keyboard_input: Res<ButtonInput<KeyCode>>,
@@ -142,7 +142,7 @@ fn input_ship_thruster(
 }
 
 /// Player's rotation control system.
-/// 
+///
 /// Checks if "A" or "D" is pressed and updates the player's [`AngularVelocity`]
 /// component accordingly.
 fn input_ship_rotation(
@@ -164,9 +164,9 @@ fn input_ship_rotation(
 }
 
 /// Player's gun trigger.
-/// 
+///
 /// Checks if the spacebar has just been pressed, spawning a bullet if so.
-/// 
+///
 /// TODO: Hook up a timer to control weapon fire-rate. Something will have to
 /// tick those timers. Maybe this system?
 fn input_ship_shoot(

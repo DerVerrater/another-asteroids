@@ -1,5 +1,5 @@
 //! Systems, Components, and any other items for powering the game logic.
-//! 
+//!
 //! Where the objects (ship, asteroid, etc) carry their own behavioral systems,
 //! the *game* keeps its main logic here. Its for ambient behaviors, like
 //! asteroid spawning, or eventually the flying saucer spawns.
@@ -11,10 +11,10 @@ use bevy::prelude::*;
 use crate::{WorldSize, events::SpawnAsteroid, objects::AsteroidSize};
 
 /// Asteroid spawning parameters and state.
-/// 
+///
 /// This struct keeps track of the rng and timer for spawning asteroids. In the
 /// future it may contain additional fields to allow for more control.
-/// 
+///
 /// It's values are operated by the [`tick_asteroid_manager`] system.
 #[derive(Resource)]
 pub struct AsteroidSpawner {
