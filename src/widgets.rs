@@ -52,6 +52,11 @@ impl Plugin for PluginGameOver {
     }
 }
 
+// Marker component for the title screen UI entity.
+// This way, a query for the TitleUI can be used to despawn the title screen
+#[derive(Component)]
+struct TitleUI;
+
 /// Marker component for things on the get-ready indicator
 #[derive(Component)]
 struct OnReadySetGo;
@@ -88,6 +93,27 @@ fn despawn<T: Component>(mut commands: Commands, to_despawn: Query<Entity, With<
     for entity in to_despawn {
         commands.entity(entity).despawn();
     }
+}
+
+fn spawn_menu(mut commands: Commands) {
+    commands
+        .spawn((
+            TitleUI,
+            Node {
+                flex_direction: FlexDirection::Column,
+                ..Default::default()
+            },
+        ))
+        .with_children(|cmds| {
+            cmds.spawn((
+                Text::new("Robert's Bad Asteroids Game"),
+                TextFont::from_font_size(50.0),
+            ));
+            cmds.spawn((
+                Text::new("Press space to begin"),
+                TextFont::from_font_size(40.0),
+            ));
+        });
 }
 
 fn spawn_get_ready(mut commands: Commands) {
@@ -256,32 +282,7 @@ fn operate_gameover_ui(
     }
 }
 
-// Marker component for the title screen UI entity.
-// This way, a query for the TitleUI can be used to despawn the title screen
-#[derive(Component)]
-struct TitleUI;
-
-fn spawn_menu(mut commands: Commands) {
-    commands
-        .spawn((
-            TitleUI,
-            Node {
-                flex_direction: FlexDirection::Column,
-                ..Default::default()
-            },
-        ))
-        .with_children(|cmds| {
-            cmds.spawn((
-                Text::new("Robert's Bad Asteroids Game"),
-                TextFont::from_font_size(50.0),
-            ));
-            cmds.spawn((
-                Text::new("Press space to begin"),
-                TextFont::from_font_size(40.0),
-            ));
-        });
-}
-
+/// Main menu input listener. Starts game when the spacebar is pressed.
 fn handle_spacebar(input: Res<ButtonInput<KeyCode>>, mut game_state: ResMut<NextState<GameState>>) {
     if input.just_pressed(KeyCode::Space) {
         game_state.set(GameState::GetReady);
