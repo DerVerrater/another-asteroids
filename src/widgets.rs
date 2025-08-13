@@ -100,6 +100,10 @@ fn spawn_menu(mut commands: Commands) {
         .spawn((
             MarkerMainMenu,
             Node {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::Center,
                 flex_direction: FlexDirection::Column,
                 ..Default::default()
             },
@@ -108,10 +112,14 @@ fn spawn_menu(mut commands: Commands) {
             cmds.spawn((
                 Text::new("Robert's Bad Asteroids Game"),
                 TextFont::from_font_size(50.0),
+                TextLayout::new_with_justify(JustifyText::Center),
+                TextShadow::default(),
             ));
             cmds.spawn((
                 Text::new("Press space to begin"),
-                TextFont::from_font_size(40.0),
+                TextFont::from_font_size(20.0),
+                TextColor(Color::srgb(0.7, 0.7, 0.7)),
+                TextShadow::default(),
             ));
         });
 }
