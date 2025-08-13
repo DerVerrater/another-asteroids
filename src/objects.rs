@@ -28,6 +28,7 @@ use crate::{
     physics::{Velocity, Wrapping},
 };
 
+/// The asteroid, defined entirely by [it's size](`AsteroidSize`).
 #[derive(Component, Deref, DerefMut)]
 pub struct Asteroid(pub AsteroidSize);
 
@@ -39,6 +40,8 @@ pub enum AsteroidSize {
 }
 
 impl AsteroidSize {
+    /// Convenience util to get the "next smallest" size. Useful for splitting
+    /// after collision.
     pub fn next(&self) -> Option<Self> {
         match self {
             AsteroidSize::Small => None,
@@ -48,9 +51,11 @@ impl AsteroidSize {
     }
 }
 
+/// Marker component for the player's ship.
 #[derive(Component)]
 pub struct Ship;
 
+/// Marker component for bullets.
 #[derive(Component)]
 pub struct Bullet;
 
@@ -126,6 +131,11 @@ pub fn split_asteroids(
     }
 }
 
+/// Spawns the player at the world origin. Used during the state change to
+/// [`GameState::Playing`] to spawn the player.
+///
+/// This only spawns the player. For player **re**-spawn activity, see the
+/// [`ship_impact_listener()`] system.
 pub fn spawn_player(mut commands: Commands, game_assets: Res<GameAssets>) {
     commands
         .spawn((
@@ -160,6 +170,9 @@ pub fn bullet_impact_listener(mut commands: Commands, mut events: EventReader<Bu
 
 /// Watch for [`ShipDestroy`] events and update game state accordingly.
 ///
+/// One life is taken from the counter, asteroids are cleared, and the player
+/// is placed back at the origin. If lives reach 0, this system will change
+/// states to [`GameState::GameOver`].
 /// - Subtract a life
 /// - Check life count. If 0, go to game-over state
 /// - Clear all asteroids
