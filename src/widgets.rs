@@ -1,11 +1,11 @@
 use crate::{
     GameState,
-    config::UI_BUTTON_NORMAL,
+    config::{UI_BUTTON_HOVERED, UI_BUTTON_NORMAL, UI_BUTTON_PRESSED},
     resources::{Lives, Score},
 };
 
 use bevy::{
-    color::palettes::css::{BLACK, GREEN, LIGHT_BLUE, RED},
+    color::palettes::css::{BLACK, GREEN, LIGHT_BLUE, RED, WHITE},
     prelude::*,
 };
 
@@ -44,7 +44,11 @@ pub struct PluginGameOver;
 impl Plugin for PluginGameOver {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(GameState::GameOver), spawn_gameover_ui)
-            .add_systems(OnExit(GameState::GameOver), despawn::<MarkerGameOver>);
+            .add_systems(OnExit(GameState::GameOver), despawn::<MarkerGameOver>)
+            .add_systems(
+                Update,
+                operate_gameover_ui.run_if(in_state(GameState::GameOver)),
+            );
     }
 }
 
@@ -55,6 +59,16 @@ struct OnReadySetGo;
 /// Marker for things on the game-over screen
 #[derive(Component)]
 struct MarkerGameOver;
+
+/// Action specifier for the game-over menu's buttons.
+///
+/// Attach this component to a button and [`PluginGameOver`] will use it to
+/// decide what to do when that button is pressed.
+#[derive(Component)]
+enum GameOverMenuAction {
+    ToMainMenu,
+    Quit,
+}
 
 /// Newtype wrapper for `Timer`. Used to count down during the "get ready" phase.
 #[derive(Deref, DerefMut, Resource)]
@@ -194,13 +208,37 @@ fn animate_get_ready_widget(
     }
 }
 
-/// Handles interaction and performs updates to the game over UI.
+/// Handles interaction and performs updates to the game-over UI.
 ///
 /// Used by [`PluginGameOver`] while in the [`GameState::GameOver`] state.
 ///
 /// Mostly a button input handler, but it also makes for a convenient single
 /// place to keep all system logic for this plugin.
-fn operate_gameover_ui() {}
+fn operate_gameover_ui(
+    mut interactions: Query<
+        (&Interaction, &mut BackgroundColor, &mut BorderColor),
+        (Changed<Interaction>, With<Button>),
+    >,
+) {
+    // TODO: Better colors. These are taken from the example and they're ugly.
+    // TODO: Read the menu action enum component and take that action.
+    for (interaction, mut color, mut border_color) in &mut interactions {
+        match *interaction {
+            Interaction::Pressed => {
+                *color = UI_BUTTON_PRESSED.into();
+                border_color.0 = RED.into();
+            }
+            Interaction::Hovered => {
+                *color = UI_BUTTON_HOVERED.into();
+                border_color.0 = WHITE.into();
+            }
+            Interaction::None => {
+                *color = UI_BUTTON_NORMAL.into();
+                border_color.0 = BLACK.into();
+            }
+        }
+    }
+}
 
 // Marker component for the title screen UI entity.
 // This way, a query for the TitleUI can be used to despawn the title screen
