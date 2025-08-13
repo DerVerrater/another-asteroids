@@ -35,6 +35,7 @@ impl Plugin for AsteroidPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
             widgets::PluginGameMenu,
+            widgets::PluginGameOver,
             widgets::PluginGetReady,
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(10.0),
             RapierDebugRenderPlugin::default(),
@@ -80,7 +81,7 @@ impl Plugin for AsteroidPlugin {
         .add_event::<events::AsteroidDestroy>()
         .add_event::<events::ShipDestroy>()
         .add_event::<events::BulletDestroy>();
-        app.insert_state(GameState::Playing);
+        app.insert_state(GameState::GameOver);
     }
 }
 

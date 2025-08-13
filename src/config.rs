@@ -5,6 +5,10 @@ use bevy::color::Color;
 
 pub const WINDOW_SIZE: bevy::prelude::Vec2 = bevy::prelude::Vec2::new(800.0, 600.0);
 
+pub const UI_BUTTON_NORMAL: Color = Color::srgb(0.15, 0.15, 0.15); // Button color when it's just hanging out
+pub const UI_BUTTON_HOVERED: Color = Color::srgb(0.25, 0.25, 0.25); // ... when it's hovered
+pub const UI_BUTTON_PRESSED: Color = Color::srgb(0.35, 0.75, 0.35); // ... when it's pressed
+
 pub(crate) const BACKGROUND_COLOR: Color = Color::srgb(0.3, 0.3, 0.3);
 pub(crate) const PLAYER_SHIP_COLOR: Color = Color::srgb(1.0, 1.0, 1.0);
 pub(crate) const SHIP_THRUSTER_COLOR_ACTIVE: Color = Color::srgb(1.0, 0.2, 0.2);

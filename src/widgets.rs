@@ -1,5 +1,6 @@
 use crate::{
     GameState,
+    config::UI_BUTTON_NORMAL,
     resources::{Lives, Score},
 };
 
@@ -42,13 +43,18 @@ pub struct PluginGameOver;
 
 impl Plugin for PluginGameOver {
     fn build(&self, app: &mut App) {
-        todo!();
+        app.add_systems(OnEnter(GameState::GameOver), spawn_gameover_ui)
+            .add_systems(OnExit(GameState::GameOver), despawn::<MarkerGameOver>);
     }
 }
 
 /// Marker component for things on the get-ready indicator
 #[derive(Component)]
 struct OnReadySetGo;
+
+/// Marker for things on the game-over screen
+#[derive(Component)]
+struct MarkerGameOver;
 
 /// Newtype wrapper for `Timer`. Used to count down during the "get ready" phase.
 #[derive(Deref, DerefMut, Resource)]
@@ -104,6 +110,65 @@ fn spawn_get_ready(mut commands: Commands) {
     ));
 }
 
+/// Spawns the game over screen.
+///
+/// Used by [`PluginGameOver`] when entering the [`GameState::GameOver`] state.
+fn spawn_gameover_ui(mut commands: Commands) {
+    commands.spawn((
+        MarkerGameOver, // Marker, so `despawn<T>` can remove this on state exit.
+        Node {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            align_items: AlignItems::Center,
+            justify_content: JustifyContent::Center,
+            flex_direction: FlexDirection::Column,
+            ..default()
+        },
+        children![
+            (
+                Button,
+                Node {
+                    width: Val::Px(150.0),
+                    height: Val::Px(65.0),
+                    border: UiRect::all(Val::Px(2.0)),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    margin: UiRect::all(Val::Px(5.0)),
+                    ..default()
+                },
+                BorderColor(Color::BLACK),
+                BorderRadius::MAX,
+                BackgroundColor(UI_BUTTON_NORMAL),
+                children![(
+                    Text::new("Main Menu"),
+                    TextColor(Color::srgb(0.9, 0.9, 0.9)),
+                    TextShadow::default(),
+                )]
+            ),
+            (
+                Button,
+                Node {
+                    width: Val::Px(150.0),
+                    height: Val::Px(65.0),
+                    border: UiRect::all(Val::Px(2.0)),
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    margin: UiRect::all(Val::Px(5.0)),
+                    ..default()
+                },
+                BorderColor(Color::BLACK),
+                BorderRadius::MAX,
+                BackgroundColor(UI_BUTTON_NORMAL),
+                children![(
+                    Text::new("Quit"),
+                    TextColor(Color::srgb(0.9, 0.9, 0.9)),
+                    TextShadow::default(),
+                )]
+            )
+        ],
+    ));
+}
+
 fn animate_get_ready_widget(
     mut text_segment: Single<&mut Text, With<CountdownText>>,
     mut bar_segment: Single<&mut Node, With<CountdownBar>>,
@@ -128,6 +193,14 @@ fn animate_get_ready_widget(
         game_state.set(GameState::Playing);
     }
 }
+
+/// Handles interaction and performs updates to the game over UI.
+///
+/// Used by [`PluginGameOver`] while in the [`GameState::GameOver`] state.
+///
+/// Mostly a button input handler, but it also makes for a convenient single
+/// place to keep all system logic for this plugin.
+fn operate_gameover_ui() {}
 
 // Marker component for the title screen UI entity.
 // This way, a query for the TitleUI can be used to despawn the title screen
