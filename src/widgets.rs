@@ -284,7 +284,7 @@ fn operate_buttons(
                         game_state.set(GameState::TitleScreen);
                     }
                     ButtonMenuAction::StartGame => {
-                        game_state.set(GameState::Playing);
+                        game_state.set(GameState::GetReady);
                     }
                     ButtonMenuAction::Quit => {
                         app_exit_events.write(AppExit::Success);
