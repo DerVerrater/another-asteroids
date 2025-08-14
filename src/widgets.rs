@@ -1,3 +1,5 @@
+use std::ops::DerefMut;
+
 use crate::{
     GameState,
     config::{UI_BUTTON_HOVERED, UI_BUTTON_NORMAL, UI_BUTTON_PRESSED},
@@ -38,6 +40,17 @@ impl Plugin for PluginGetReady {
     }
 }
 
+/// Plugin for the in-game HUD
+pub struct PluginGameHud;
+
+impl Plugin for PluginGameHud {
+    fn build(&self, app: &mut App) {
+        app.add_systems(OnEnter(GameState::Playing), spawn_ui)
+            .add_systems(OnExit(GameState::Playing), despawn::<MarkerHUD>)
+            .add_systems(Update, (operate_ui).run_if(in_state(GameState::Playing)));
+    }
+}
+
 /// Plugin for the game-over screen
 pub struct PluginGameOver;
 
@@ -64,6 +77,10 @@ struct OnReadySetGo;
 /// Marker for things on the game-over screen
 #[derive(Component)]
 struct MarkerGameOver;
+
+/// Marker for things on the HUD (the in-game UI elements)
+#[derive(Component)]
+struct MarkerHUD;
 
 /// Action specifier for the game-over menu's buttons.
 ///
@@ -294,8 +311,50 @@ fn handle_spacebar(input: Res<ButtonInput<KeyCode>>, mut game_state: ResMut<Next
 }
 
 pub fn spawn_ui(mut commands: Commands, score: Res<Score>, lives: Res<Lives>) {
+    let score = score.0;
+    let lives = lives.0;
     commands.spawn((
-        Text::new(format!("Score: {score:?} | Lives: {lives:?}")),
-        TextFont::from_font_size(25.0),
+        MarkerHUD,
+        Node {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            align_items: AlignItems::Start,
+            justify_content: JustifyContent::SpaceBetween,
+            padding: UiRect::all(Val::Px(5.0)),
+            ..default()
+        },
+        children![
+            (
+                Text::new(format!("Score: {score}")),
+                TextFont::from_font_size(25.0),
+                TextShadow::default(),
+            ),
+            (
+                Text::new(format!("Lives: {lives}")),
+                TextFont::from_font_size(25.0),
+                TextShadow::default(),
+            )
+        ],
     ));
+}
+
+/// Updates the HUD with the current score & life count
+///
+/// TODO: some kind of event-based thing. Touching the text nodes every frame
+/// seems expensive.
+fn operate_ui(
+    mut query: Single<(&Node, &Children), With<MarkerHUD>>,
+    mut text_query: Query<&mut Text>,
+    lives: Res<Lives>,
+    score: Res<Score>,
+) {
+    let (_node, children) = query.deref_mut();
+    let score = score.0;
+    let lives = lives.0;
+    // TODO: Something smarter than `unwrap()`
+    let mut score_text = text_query.get_mut(children[0]).unwrap();
+    **score_text = format!("Score: {score}");
+
+    let mut lives_text = text_query.get_mut(children[1]).unwrap();
+    **lives_text = format!("Lives: {lives}");
 }

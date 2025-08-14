@@ -37,6 +37,7 @@ impl Plugin for AsteroidPlugin {
             widgets::PluginGameMenu,
             widgets::PluginGameOver,
             widgets::PluginGetReady,
+            widgets::PluginGameHud,
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(10.0),
             RapierDebugRenderPlugin::default(),
         ))
@@ -48,10 +49,7 @@ impl Plugin for AsteroidPlugin {
         .insert_resource(AsteroidSpawner::new())
         .init_resource::<GameAssets>()
         .add_systems(Startup, spawn_camera)
-        .add_systems(
-            OnEnter(GameState::Playing),
-            (objects::spawn_player, widgets::spawn_ui),
-        )
+        .add_systems(OnEnter(GameState::Playing), objects::spawn_player)
         .add_systems(
             FixedUpdate,
             (
