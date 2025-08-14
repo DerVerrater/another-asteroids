@@ -51,6 +51,7 @@ impl Plugin for AsteroidPlugin {
         .init_resource::<GameAssets>()
         .add_systems(Startup, spawn_camera)
         .add_systems(OnEnter(GameState::Playing), objects::spawn_player)
+        .add_systems(OnExit(GameState::Playing), despawn::<Ship>)
         .add_systems(
             FixedUpdate,
             (
@@ -81,6 +82,14 @@ impl Plugin for AsteroidPlugin {
         .add_event::<events::ShipDestroy>()
         .add_event::<events::BulletDestroy>();
         app.insert_state(GameState::TitleScreen);
+    }
+}
+
+/// Despawns entities matching the generic argument. Intended to remove UI
+/// elements.
+pub(crate) fn despawn<T: Component>(mut commands: Commands, to_despawn: Query<Entity, With<T>>) {
+    for entity in to_despawn {
+        commands.entity(entity).despawn();
     }
 }
 

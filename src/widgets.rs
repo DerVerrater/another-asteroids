@@ -3,6 +3,7 @@ use std::ops::DerefMut;
 use crate::{
     GameState,
     config::{UI_BUTTON_HOVERED, UI_BUTTON_NORMAL, UI_BUTTON_PRESSED},
+    despawn,
     resources::{Lives, Score},
 };
 
@@ -104,14 +105,6 @@ struct CountdownText;
 /// Marker for the counter bar segment
 #[derive(Component)]
 struct CountdownBar;
-
-/// Despawns entities matching the generic argument. Intended to remove UI
-/// elements.
-fn despawn<T: Component>(mut commands: Commands, to_despawn: Query<Entity, With<T>>) {
-    for entity in to_despawn {
-        commands.entity(entity).despawn();
-    }
-}
 
 /// Utility function for creating a standard button.
 fn button_bundle(text: &str) -> impl Bundle {
