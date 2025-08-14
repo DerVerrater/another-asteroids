@@ -46,6 +46,7 @@ impl Plugin for AsteroidPlugin {
         .insert_resource(Lives(3))
         .register_type::<Lives>()
         .insert_resource(Score(0))
+        .register_type::<Score>()
         .insert_resource(AsteroidSpawner::new())
         .init_resource::<GameAssets>()
         .add_systems(Startup, spawn_camera)

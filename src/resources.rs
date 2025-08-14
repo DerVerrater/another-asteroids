@@ -22,7 +22,8 @@ use crate::{
     SHIP_THRUSTER_COLOR_INACTIVE, config::WINDOW_SIZE,
 };
 
-#[derive(Resource, Debug, Deref, Clone, Copy)]
+#[derive(InspectorOptions, Reflect, Resource, Debug, Deref, Clone, Copy)]
+#[reflect(Resource, InspectorOptions)]
 pub struct Score(pub i32);
 
 impl From<Score> for String {
