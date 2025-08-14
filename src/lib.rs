@@ -16,7 +16,7 @@ use crate::config::{
     SHIP_THRUSTER_COLOR_INACTIVE,
 };
 use crate::machinery::AsteroidSpawner;
-use crate::objects::{Bullet, Ship};
+use crate::objects::{Bullet, Ship, Weapon};
 use crate::physics::AngularVelocity;
 
 use bevy::prelude::*;
@@ -160,19 +160,25 @@ fn input_ship_rotation(
 /// tick those timers. Maybe this system?
 fn input_ship_shoot(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    ship: Single<(&Transform, &physics::Velocity), With<Ship>>,
+    ship: Single<(&Transform, &physics::Velocity, &mut Weapon), With<Ship>>,
     game_assets: Res<GameAssets>,
     mut commands: Commands,
+    time: Res<Time>,
 ) {
-    let (ship_pos, ship_vel) = *ship;
+    let (ship_pos, ship_vel, mut weapon) = ship.into_inner();
 
-    // Derive bullet velocity, add to the ship's velocity
-    let bullet_vel = (ship_pos.rotation * Vec3::X).xy() * BULLET_SPEED;
-    let bullet_vel = bullet_vel + ship_vel.0;
+    // Tick the timer so the cooldown eventually finishes. Once it does, the
+    // value will clamp at 0. The weapon is now ready.
+    weapon.tick(time.delta());
 
-    // TODO: create a timer for the gun fire rate.
-    // For now, spawn one for each press of the spacebar.
-    if keyboard_input.just_pressed(KeyCode::Space) {
+    // If the weapon is ready and the player presses the trigger,
+    // spawn a bullet & reset the timer.
+    if weapon.finished() && keyboard_input.pressed(KeyCode::Space) {
+        weapon.reset();
+        // Derive bullet velocity, add to the ship's velocity
+        let bullet_vel = (ship_pos.rotation * Vec3::X).xy() * BULLET_SPEED;
+        let bullet_vel = bullet_vel + ship_vel.0;
+
         commands.spawn((
             Bullet,
             Collider::ball(0.2),

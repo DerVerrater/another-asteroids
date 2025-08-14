@@ -13,6 +13,7 @@ pub(crate) const BACKGROUND_COLOR: Color = Color::srgb(0.3, 0.3, 0.3);
 pub(crate) const PLAYER_SHIP_COLOR: Color = Color::srgb(1.0, 1.0, 1.0);
 pub(crate) const SHIP_THRUSTER_COLOR_ACTIVE: Color = Color::srgb(1.0, 0.2, 0.2);
 pub(crate) const SHIP_THRUSTER_COLOR_INACTIVE: Color = Color::srgb(0.5, 0.5, 0.5);
+pub(crate) const SHIP_FIRE_RATE: f32 = 3.0; // in bullets-per-second
 pub(crate) const ASTEROID_SMALL_COLOR: Color = Color::srgb(1.0, 0., 0.);
 pub(crate) const BULLET_COLOR: Color = Color::srgb(0.0, 0.1, 0.9);
 // TODO: asteroid medium & large

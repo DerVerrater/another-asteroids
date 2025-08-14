@@ -22,7 +22,7 @@ use bevy_rapier2d::prelude::{ActiveCollisionTypes, ActiveEvents, Collider, Senso
 
 use crate::{
     AngularVelocity, GameAssets, GameState, Lives,
-    config::ASTEROID_LIFETIME,
+    config::{ASTEROID_LIFETIME, SHIP_FIRE_RATE},
     events::{AsteroidDestroy, BulletDestroy, ShipDestroy, SpawnAsteroid},
     machinery::Lifetime,
     physics::{Velocity, Wrapping},
@@ -54,6 +54,10 @@ impl AsteroidSize {
 /// Marker component for the player's ship.
 #[derive(Component)]
 pub struct Ship;
+
+/// The ship's gun (is just a timer)
+#[derive(Component, Deref, DerefMut)]
+pub struct Weapon(Timer);
 
 /// Marker component for bullets.
 #[derive(Component)]
@@ -144,6 +148,7 @@ pub fn spawn_player(mut commands: Commands, game_assets: Res<GameAssets>) {
             ActiveEvents::COLLISION_EVENTS,
             ActiveCollisionTypes::STATIC_STATIC,
             Ship,
+            Weapon(Timer::from_seconds(1.0 / SHIP_FIRE_RATE, TimerMode::Once)),
             Wrapping,
             Velocity(Vec2::ZERO),
             AngularVelocity(0.0),
