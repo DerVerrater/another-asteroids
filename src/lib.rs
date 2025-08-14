@@ -23,7 +23,6 @@ use bevy::prelude::*;
 use bevy_rapier2d::{
     plugin::{NoUserData, RapierPhysicsPlugin},
     prelude::*,
-    render::RapierDebugRenderPlugin,
 };
 use machinery::Lifetime;
 use resources::{GameAssets, Lives, Score, WorldSize};
@@ -39,7 +38,6 @@ impl Plugin for AsteroidPlugin {
             widgets::PluginGetReady,
             widgets::PluginGameHud,
             RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(10.0),
-            RapierDebugRenderPlugin::default(),
         ))
         .insert_resource(ClearColor(BACKGROUND_COLOR))
         .insert_resource(WorldSize::default())
