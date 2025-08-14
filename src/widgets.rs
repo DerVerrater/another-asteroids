@@ -162,7 +162,8 @@ fn spawn_menu(mut commands: Commands) {
         });
 }
 
-fn spawn_get_ready(mut commands: Commands) {
+fn spawn_get_ready(mut commands: Commands, mut timer: ResMut<ReadySetGoTimer>) {
+    timer.reset();
     commands.spawn((
         OnReadySetGo, // marker, so this can be de-spawned properly
         Node {
