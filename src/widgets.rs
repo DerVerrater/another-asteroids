@@ -5,7 +5,7 @@ use crate::{
 };
 
 use bevy::{
-    color::palettes::css::{BLACK, GREEN, LIGHT_BLUE, RED, WHITE},
+    color::palettes::css::{BLACK, DARK_GRAY, GREEN, LIGHT_BLUE, RED, WHITE},
     prelude::*,
 };
 
@@ -261,7 +261,7 @@ fn operate_buttons(
         match *interaction {
             Interaction::Pressed => {
                 *color = UI_BUTTON_PRESSED.into();
-                border_color.0 = RED.into();
+                border_color.0 = DARK_GRAY.into();
                 match menu_action {
                     ButtonMenuAction::ToMainMenu => {
                         game_state.set(GameState::TitleScreen);
