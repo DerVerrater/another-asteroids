@@ -58,6 +58,7 @@ impl Plugin for AsteroidPlugin {
                 input_ship_shoot,
                 physics::wrap_entities,
                 machinery::tick_asteroid_manager,
+                machinery::operate_sparklers,
                 objects::spawn_asteroid.after(machinery::tick_asteroid_manager),
                 objects::split_asteroids,
                 objects::bullet_impact_listener,

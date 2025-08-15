@@ -103,3 +103,35 @@ pub fn tick_lifetimes(
         }
     }
 }
+
+/// Entities marked with this will flash. Used to make the debris field sparkle.
+#[derive(Component, Deref, DerefMut)]
+pub struct Sparkler(Timer);
+
+impl Sparkler {
+    pub fn at_interval(period: f32) -> Self {
+        Self(Timer::from_seconds(period, TimerMode::Repeating))
+    }
+}
+
+/// Advances the timer in a sparkler, swapping between visible and invisible
+/// each time the timer expires.
+pub fn operate_sparklers(mut sparklers: Query<(&mut Visibility, &mut Sparkler)>, time: Res<Time>) {
+    for (mut vis, mut timer) in sparklers {
+        if timer.tick(time.delta()).just_finished() {
+            // Cycle between visible and in-visible modes (and print warning for "Inherited")
+            *vis = match *vis {
+                Visibility::Inherited => {
+                    // I don't know when entities have this mode, so I'm going
+                    // print a warning for a while.
+                    eprintln!(
+                        "->> WARN: `machinery::operate_sparklers` found an entity with Visibility::Inherited"
+                    );
+                    Visibility::Inherited
+                }
+                Visibility::Hidden => Visibility::Visible,
+                Visibility::Visible => Visibility::Hidden,
+            };
+        }
+    }
+}
