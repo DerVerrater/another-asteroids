@@ -83,10 +83,14 @@ struct MarkerGameOver;
 #[derive(Component)]
 struct MarkerHUD;
 
-/// Action specifier for the game-over menu's buttons.
+/// Action specifier for the buttons on the menus.
 ///
-/// Attach this component to a button and [`PluginGameOver`] will use it to
-/// decide what to do when that button is pressed.
+/// Instead of holding function pointers for use as callbacks, I'm doing enum-
+/// dispatch. Add a variant according to what action the button press should
+/// trigger.
+///
+/// Only [`PluginGameMenu`] and [`PluginGameOver`] will use it to this
+/// component. There is no always-on, global system.
 #[derive(Component)]
 enum ButtonMenuAction {
     ToMainMenu,
