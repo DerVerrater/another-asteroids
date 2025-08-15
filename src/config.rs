@@ -25,5 +25,6 @@ pub(crate) const BULLET_SPEED: f32 = 150.0;
 pub(crate) const BULLET_LIFETIME: f32 = 2.0;
 
 pub(crate) const ASTEROID_LIFETIME: f32 = 40.0;
+pub(crate) const DEBRIS_LIFETIME: f32 = 3.0; // lifetime, in seconds
 
 pub const RNG_SEED: [u8; 32] = *b"12345678909876543210123456789098";

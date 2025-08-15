@@ -4,6 +4,7 @@
 
 use bevy::{
     ecs::{
+        bundle::Bundle,
         component::Component,
         entity::Entity,
         event::{EventReader, EventWriter},
@@ -12,7 +13,7 @@ use bevy::{
     },
     math::{Vec2, Vec3, Vec3Swizzles},
     prelude::{Deref, DerefMut},
-    render::mesh::Mesh2d,
+    render::{mesh::Mesh2d, view::Visibility},
     sprite::MeshMaterial2d,
     state::state::NextState,
     time::{Timer, TimerMode},
@@ -22,9 +23,9 @@ use bevy_rapier2d::prelude::{ActiveCollisionTypes, ActiveEvents, Collider, Senso
 
 use crate::{
     AngularVelocity, GameAssets, GameState, Lives,
-    config::{ASTEROID_LIFETIME, SHIP_FIRE_RATE},
+    config::{ASTEROID_LIFETIME, DEBRIS_LIFETIME, SHIP_FIRE_RATE},
     events::{AsteroidDestroy, BulletDestroy, ShipDestroy, SpawnAsteroid},
-    machinery::Lifetime,
+    machinery::{Lifetime, Sparkler},
     physics::{Velocity, Wrapping},
 };
 
@@ -62,6 +63,10 @@ pub struct Weapon(Timer);
 /// Marker component for bullets.
 #[derive(Component)]
 pub struct Bullet;
+
+/// Debris left behind after the ship is destroyed.
+#[derive(Component)]
+pub struct Debris;
 
 /// Responds to [`SpawnAsteroid`] events, spawning as specified
 pub fn spawn_asteroid(
@@ -189,6 +194,7 @@ pub fn ship_impact_listener(
     rocks: Query<Entity, With<Asteroid>>,
     mut player: Single<(&mut Transform, &mut Velocity), With<Ship>>,
     mut next_state: ResMut<NextState<GameState>>,
+    game_assets: Res<GameAssets>,
 ) {
     for _ in events.read() {
         // STEP 1: Decrement lives (and maybe go to game over)
@@ -203,6 +209,23 @@ pub fn ship_impact_listener(
         // STEP 2: Clear asteroids
         for rock in rocks {
             commands.entity(rock).despawn();
+        }
+
+        // STEP 3: spawn the debris field where the player used to be.
+        for i in 0..10 {
+            let angle_rads = (i as f32) / 10.0 * std::f32::consts::TAU;
+            let dir = Vec2::from_angle(angle_rads);
+            let vel = player.1.0 + dir * 100.0;
+            commands.spawn((
+                Debris,
+                Visibility::Visible, // make sure it's "visible" not "Inherited" so the cycle works right
+                Lifetime(Timer::from_seconds(DEBRIS_LIFETIME, TimerMode::Once)),
+                Sparkler::at_interval(0.15),
+                Mesh2d(game_assets.thruster_mesh()), // borrow the thruster mesh for now
+                MeshMaterial2d(game_assets.thruster_mat_active()), // ... and the active thruster material
+                player.0.clone(),                                  // clone the player transform
+                Velocity(vel),
+            ));
         }
 
         // STEP 3: Respawn player (teleport them to the origin)
