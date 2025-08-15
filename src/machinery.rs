@@ -116,7 +116,7 @@ impl Sparkler {
 
 /// Advances the timer in a sparkler, swapping between visible and invisible
 /// each time the timer expires.
-pub fn operate_sparklers(mut sparklers: Query<(&mut Visibility, &mut Sparkler)>, time: Res<Time>) {
+pub fn operate_sparklers(sparklers: Query<(&mut Visibility, &mut Sparkler)>, time: Res<Time>) {
     for (mut vis, mut timer) in sparklers {
         if timer.tick(time.delta()).just_finished() {
             // Cycle between visible and in-visible modes (and print warning for "Inherited")
