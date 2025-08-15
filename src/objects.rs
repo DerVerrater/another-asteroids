@@ -197,18 +197,19 @@ pub fn ship_impact_listener(
     game_assets: Res<GameAssets>,
 ) {
     for _ in events.read() {
-        // STEP 1: Decrement lives (and maybe go to game over)
+        // STEP 1: Clear asteroids
+        for rock in rocks {
+            commands.entity(rock).despawn();
+        }
+
+        // STEP 2: Decrement lives
         if lives.0 == 0 {
-            // If already at 0, game is over.
+            // If the player has run out, return early with a state change.
             next_state.set(GameState::GameOver);
+            return;
         } else {
             // Decrease life count.
             lives.0 -= 1;
-        }
-
-        // STEP 2: Clear asteroids
-        for rock in rocks {
-            commands.entity(rock).despawn();
         }
 
         // STEP 3: spawn the debris field where the player used to be.
@@ -228,7 +229,7 @@ pub fn ship_impact_listener(
             ));
         }
 
-        // STEP 3: Respawn player (teleport them to the origin)
+        // STEP 4: Respawn player (teleport them to the origin)
         player.0.translation = Vec3::ZERO;
         player.1.0 = Vec2::ZERO;
     }
