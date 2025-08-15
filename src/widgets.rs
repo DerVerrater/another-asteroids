@@ -216,6 +216,11 @@ fn spawn_gameover_ui(mut commands: Commands) {
             ..default()
         },
         children![
+            (
+                Text::new("Game Over"),
+                TextFont::from_font_size(35.0),
+                TextShadow::default(),
+            ),
             (button_bundle("Main Menu"), ButtonMenuAction::ToMainMenu,),
             (button_bundle("Quit"), ButtonMenuAction::Quit),
         ],
