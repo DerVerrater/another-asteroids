@@ -10,6 +10,7 @@ bevy_rapier2d = "0.31.0"
 rand = "0.9.2"
 
 [features]
+default = ["dynamic_linking"]
 dynamic_linking = ["bevy/dynamic_linking"]
 debug_ui = ["bevy_rapier2d/debug-render-2d"]
 
