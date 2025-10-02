@@ -1,13 +1,13 @@
 [package]
 name = "asteroids"
-version = "0.5.0"
+version = "0.6.0-dev1"
 edition = "2024"
 license = "AGPL-3.0-only"
 
 [dependencies]
-bevy = "0.16"
+bevy = "0.17"
 bevy-inspector-egui = "0.32"
-bevy_rapier2d = "0.31"
+bevy_rapier2d = "0.32"
 rand = "0.9"
 
 [features]
