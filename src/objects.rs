@@ -23,7 +23,7 @@ use bevy_rapier2d::prelude::{ActiveCollisionTypes, ActiveEvents, Collider, Senso
 use crate::{
     AngularVelocity, GameAssets, GameState, Lives,
     config::{ASTEROID_LIFETIME, DEBRIS_LIFETIME, SHIP_FIRE_RATE},
-    events::{AsteroidDestroy, BulletDestroy, ShipDestroy, SpawnAsteroid},
+    messages::{AsteroidDestroy, BulletDestroy, ShipDestroy, SpawnAsteroid},
     machinery::{Lifetime, Sparkler},
     physics::{Velocity, Wrapping},
 };

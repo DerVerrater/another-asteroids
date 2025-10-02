@@ -8,7 +8,7 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 
-use crate::{WorldSize, events::{AsteroidDestroy, SpawnAsteroid}, objects::AsteroidSize, resources::Score};
+use crate::{WorldSize, messages::{AsteroidDestroy, SpawnAsteroid}, objects::AsteroidSize, resources::Score};
 
 /// Asteroid spawning parameters and state.
 ///

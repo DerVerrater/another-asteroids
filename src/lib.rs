@@ -3,7 +3,7 @@
 //! Compile-time configurables can be found in the [`config`] module.
 
 pub mod config;
-mod events;
+mod messages;
 mod machinery;
 mod objects;
 mod physics;
@@ -77,10 +77,10 @@ impl Plugin for AsteroidPlugin {
             )
                 .run_if(in_state(GameState::Playing)),
         )
-        .add_event::<events::SpawnAsteroid>()
-        .add_event::<events::AsteroidDestroy>()
-        .add_event::<events::ShipDestroy>()
-        .add_event::<events::BulletDestroy>();
+        .add_event::<messages::SpawnAsteroid>()
+        .add_event::<messages::AsteroidDestroy>()
+        .add_event::<messages::ShipDestroy>()
+        .add_event::<messages::BulletDestroy>();
         app.insert_state(GameState::TitleScreen);
     }
 }
