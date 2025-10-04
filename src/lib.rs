@@ -77,10 +77,10 @@ impl Plugin for AsteroidPlugin {
             )
                 .run_if(in_state(GameState::Playing)),
         )
-        .add_event::<messages::SpawnAsteroid>()
-        .add_event::<messages::AsteroidDestroy>()
-        .add_event::<messages::ShipDestroy>()
-        .add_event::<messages::BulletDestroy>();
+        .add_message::<messages::SpawnAsteroid>()
+        .add_message::<messages::AsteroidDestroy>()
+        .add_message::<messages::ShipDestroy>()
+        .add_message::<messages::BulletDestroy>();
         app.insert_state(GameState::TitleScreen);
     }
 }

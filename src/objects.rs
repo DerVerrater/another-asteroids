@@ -6,7 +6,7 @@ use bevy::{
     ecs::{
         component::Component,
         entity::Entity,
-        event::{EventReader, EventWriter},
+        message::{MessageReader, MessageWriter},
         query::With,
         system::{Commands, Query, Res, ResMut, Single},
     },
@@ -69,7 +69,7 @@ pub struct Debris;
 
 /// Responds to [`SpawnAsteroid`] events, spawning as specified
 pub fn spawn_asteroid(
-    mut events: EventReader<SpawnAsteroid>,
+    mut events: MessageReader<SpawnAsteroid>,
     mut commands: Commands,
     game_assets: Res<GameAssets>,
 ) {
@@ -109,8 +109,8 @@ pub fn spawn_asteroid(
 /// The velocity of the child asteroids is scattered somewhat, as if they were
 /// explosively pushed apart.
 pub fn split_asteroids(
-    mut destroy_events: EventReader<AsteroidDestroy>,
-    mut respawn_events: EventWriter<SpawnAsteroid>,
+    mut destroy_events: MessageReader<AsteroidDestroy>,
+    mut respawn_events: MessageWriter<SpawnAsteroid>,
     mut commands: Commands,
     query: Query<(&Transform, &Asteroid, &Velocity)>,
 ) {
@@ -171,7 +171,7 @@ pub fn spawn_player(mut commands: Commands, game_assets: Res<GameAssets>) {
 
 /// Watch for [`BulletDestroy`] events and despawn
 /// the associated bullet.
-pub fn bullet_impact_listener(mut commands: Commands, mut events: EventReader<BulletDestroy>) {
+pub fn bullet_impact_listener(mut commands: Commands, mut events: MessageReader<BulletDestroy>) {
     for event in events.read() {
         commands.entity(event.0).despawn();
     }
@@ -187,7 +187,7 @@ pub fn bullet_impact_listener(mut commands: Commands, mut events: EventReader<Bu
 /// - Clear all asteroids
 /// - Respawn player
 pub fn ship_impact_listener(
-    mut events: EventReader<ShipDestroy>,
+    mut events: MessageReader<ShipDestroy>,
     mut commands: Commands,
     mut lives: ResMut<Lives>,
     rocks: Query<Entity, With<Asteroid>>,

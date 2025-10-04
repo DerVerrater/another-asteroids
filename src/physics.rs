@@ -89,10 +89,10 @@ pub(crate) fn wrap_entities(
 /// | Bullet & Bullet | Nothing. Bullets won't collide with each other (and probably can't under normal gameplay conditions) |
 /// | Bullet & Ship | Nothing. The player shouldn't be able to shoot themselves (and the Flying Saucer hasn't been impl.'d, so it's bullets don't count) |
 pub fn collision_listener(
-    mut collisions: EventReader<CollisionEvent>,
-    mut ship_writer: EventWriter<messages::ShipDestroy>,
-    mut asteroid_writer: EventWriter<messages::AsteroidDestroy>,
-    mut bullet_writer: EventWriter<messages::BulletDestroy>,
+    mut collisions: BufferedReader<CollisionEvent>,
+    mut ship_writer: MessageWriter<messages::ShipDestroy>,
+    mut asteroid_writer: MessageWriter<messages::AsteroidDestroy>,
+    mut bullet_writer: MessageWriter<messages::BulletDestroy>,
     player: Single<Entity, With<Ship>>,
     bullets: Query<&Bullet>,
     rocks: Query<&Asteroid>,
