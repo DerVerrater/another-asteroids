@@ -3,14 +3,14 @@
 ## Do not use it if that isn't your goal!
 ##
 
-SRC_DIR = ./src
-SRCS := $(wildcard $(SRC_DIR)/**)
-
 # Patch these to select a different build profile or target
 # The target shouldn't change any time soon. WASM64, I guess. Other targets
 # aren't aimed at the web, so you shouldn't be using this makefile.
 CARGO_TARGET := wasm32-unknown-unknown
 CARGO_PROFILE := tiny
+
+SRC_DIR = ./src
+SRCS := $(wildcard $(SRC_DIR)/**)
 
 .PHONY: clean full-clean web tarball
 
