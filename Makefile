@@ -12,13 +12,23 @@ CARGO_PROFILE := tiny
 SRC_DIR = ./src
 SRCS := $(wildcard $(SRC_DIR)/**)
 
-.PHONY: clean full-clean web tarball
+.PHONY: clean full-clean tarball tarball-standalone web web-standalone
 
-web: out/asteroids.js out/asteroids_bg.wasm out/index.html
+# "Standalone" version. It includes an index.html to serve as-is
+web-standalone: out/asteroids.js out/asteroids_bg.wasm out/index.html
+
+# "Bundle-able" version. It has a page, but no index.html. Consumers are
+# expected to provide their own index.html and link to this page.
+web: out/asteroids.js out/asteroids_bg.wasm out/asteroids.html
 
 tarball: asteroids_web_root.tar
 
-asteroids_web_root.tar: out/asteroids.js out/asteroids_bg.wasm out/index.html
+tarball_standalone: asteroids_web_root_standalone.tar
+
+asteroids_web_root.tar: out/asteroids.js out/asteroids_bg.wasm out/asteroids.html
+	tar -caf $@ $^
+
+asteroids_web_root_standalone.tar: out/asteroids.js out/asteroids_bg.wasm out/index.html
 	tar -caf $@ $^
 
 target/$(CARGO_TARGET)/$(CARGO_PROFILE)/asteroids.wasm: $(SRCS) Cargo.lock Cargo.toml
@@ -32,13 +42,20 @@ out:
 out/asteroids.js out/asteroids_bg.wasm &: target/$(CARGO_TARGET)/$(CARGO_PROFILE)/asteroids.wasm | out
 	wasm-bindgen --no-typescript --target web --out-dir ./out/ --out-name asteroids target/$(CARGO_TARGET)/$(CARGO_PROFILE)/asteroids.wasm
 
+# Copies the index page to the output dir.
 out/index.html: www/index.html
 	cp -a $< $@
+	rm -f out/boids.html
+
+# Like `out/index.html`, but renames the page for use in a larger site.
+out/asteroids.html: www/index.html
+	cp -a $< $@
+	rm -f out/index.html
 
 # Clean the web build, but not the Cargo cache. Cargo handles it's own caching
 # and I don't want to obliterate it all the time.
 clean:
-	rm -rf out/ asteroids_web_root.tar
+	rm -rf out/ asteroids_web_root.tar asteroids_web_root_standalone.tar
 
 # Delete everything, including the Cargo build cache. In case someone needs
 # this, I guess.
