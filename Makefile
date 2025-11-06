@@ -61,3 +61,11 @@ clean:
 # this, I guess.
 full-clean: clean
 	cargo clean
+
+# Installation goal. It's meant to be a helper utility for moving the built
+# output into the web root. Only supports the "bundle-able" mode.
+install: web
+	install -dm0755 $(DESTDIR)
+	install -m0644 out/asteroids.js $(DESTDIR)/
+	install -m0644 out/asteroids_bg.wasm $(DESTDIR)/
+	install -m0644 out/asteroids.html $(DESTDIR)/
