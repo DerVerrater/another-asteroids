@@ -8,7 +8,7 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 
-use crate::{WorldSize, events::SpawnAsteroid, objects::AsteroidSize};
+use crate::{WorldSize, events::{AsteroidDestroy, SpawnAsteroid}, objects::AsteroidSize, resources::Score};
 
 /// Asteroid spawning parameters and state.
 ///
@@ -133,5 +133,17 @@ pub fn operate_sparklers(sparklers: Query<(&mut Visibility, &mut Sparkler)>, tim
                 Visibility::Visible => Visibility::Hidden,
             };
         }
+    }
+}
+
+/// Event listener for adding score after an asteroid was destroyed
+///
+/// Refreshing the HUD element is done by [crate::widgets::operate_ui] (a private function)
+pub fn update_scoreboard(
+    mut destroy_events: EventReader<AsteroidDestroy>,
+    mut scoreboard: ResMut<Score>,
+) {
+    for _event in destroy_events.read() {
+        scoreboard.0 += 100;
     }
 }

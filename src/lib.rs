@@ -65,6 +65,7 @@ impl Plugin for AsteroidPlugin {
                 objects::ship_impact_listener,
                 physics::collision_listener,
                 machinery::tick_lifetimes,
+                machinery::update_scoreboard,
             )
                 .run_if(in_state(GameState::Playing)),
         )
