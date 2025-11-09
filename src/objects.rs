@@ -4,7 +4,6 @@
 
 use bevy::{
     ecs::{
-        bundle::Bundle,
         component::Component,
         entity::Entity,
         event::{EventReader, EventWriter},
