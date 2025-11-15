@@ -45,7 +45,7 @@ out/asteroids.js out/asteroids_bg.wasm &: target/$(CARGO_TARGET)/$(CARGO_PROFILE
 # Copies the index page to the output dir.
 out/index.html: www/index.html
 	cp -a $< $@
-	rm -f out/boids.html
+	rm -f out/asteroids.html
 
 # Like `out/index.html`, but renames the page for use in a larger site.
 out/asteroids.html: www/index.html
