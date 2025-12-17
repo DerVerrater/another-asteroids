@@ -3,6 +3,7 @@
 //! Asteroids, the player's ship, and such.
 
 use bevy::{
+    audio::{AudioPlayer, PlaybackSettings},
     camera::visibility::Visibility,
     ecs::{
         component::Component,
@@ -232,5 +233,11 @@ pub fn ship_impact_listener(
         // STEP 4: Respawn player (teleport them to the origin)
         player.0.translation = Vec3::ZERO;
         player.1.0 = Vec2::ZERO;
+
+        // STEP 5: Play crash sound
+        commands.spawn((
+            AudioPlayer::new(game_assets.wreck_sound()),
+            PlaybackSettings::ONCE,
+        ));
     }
 }

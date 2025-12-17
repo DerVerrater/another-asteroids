@@ -1,7 +1,8 @@
 //! All the resources for the game
 
 use bevy::{
-    asset::{Assets, Handle},
+    asset::{AssetServer, Assets, Handle},
+    audio::AudioSource,
     ecs::{
         resource::Resource,
         world::{FromWorld, World},
@@ -57,6 +58,7 @@ impl Default for WorldSize {
 pub struct GameAssets {
     meshes: [Handle<Mesh>; 5],
     materials: [Handle<ColorMaterial>; 7],
+    sounds: [Handle<AudioSource>; 1],
 }
 
 impl GameAssets {
@@ -95,6 +97,10 @@ impl GameAssets {
     pub fn bullet(&self) -> (Handle<Mesh>, Handle<ColorMaterial>) {
         (self.meshes[4].clone(), self.materials[6].clone())
     }
+
+    pub fn wreck_sound(&self) -> Handle<AudioSource> {
+        self.sounds[0].clone()
+    }
 }
 
 impl FromWorld for GameAssets {
@@ -122,6 +128,12 @@ impl FromWorld for GameAssets {
             world_materials.add(ASTEROID_SMALL_COLOR),
             world_materials.add(BULLET_COLOR),
         ];
-        GameAssets { meshes, materials }
+        let loader = world.resource_mut::<AssetServer>();
+        let sounds = [loader.load("explosionCrunch_004.ogg")];
+        GameAssets {
+            meshes,
+            materials,
+            sounds,
+        }
     }
 }
