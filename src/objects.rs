@@ -237,7 +237,7 @@ pub fn ship_impact_listener(
         // STEP 5: Play crash sound
         commands.spawn((
             AudioPlayer::new(game_assets.wreck_sound()),
-            PlaybackSettings::ONCE,
+            PlaybackSettings::DESPAWN, // despawn this entity when playback ends.
         ));
     }
 }
