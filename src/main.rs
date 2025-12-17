@@ -8,7 +8,7 @@ fn main() {
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 canvas: Some("#game-canvas".to_owned()),
-                resolution: WindowResolution::new(WINDOW_SIZE.x, WINDOW_SIZE.y),
+                resolution: WindowResolution::new(WINDOW_SIZE.0, WINDOW_SIZE.1),
                 ..default()
             }),
             ..default()

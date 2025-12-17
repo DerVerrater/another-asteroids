@@ -8,7 +8,12 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 
-use crate::{WorldSize, messages::{AsteroidDestroy, SpawnAsteroid}, objects::AsteroidSize, resources::Score};
+use crate::{
+    WorldSize,
+    messages::{AsteroidDestroy, SpawnAsteroid},
+    objects::AsteroidSize,
+    resources::Score,
+};
 
 /// Asteroid spawning parameters and state.
 ///
@@ -38,7 +43,7 @@ impl AsteroidSpawner {
 /// Update the asteroid spawn timer in the [`AsteroidSpawner`] resource, and
 /// spawns any asteroids that are due this frame.
 pub fn tick_asteroid_manager(
-    mut events: EventWriter<SpawnAsteroid>,
+    mut events: MessageWriter<SpawnAsteroid>,
     mut spawner: ResMut<AsteroidSpawner>,
     time: Res<Time>,
     play_area: Res<WorldSize>,
@@ -140,7 +145,7 @@ pub fn operate_sparklers(sparklers: Query<(&mut Visibility, &mut Sparkler)>, tim
 ///
 /// Refreshing the HUD element is done by [crate::widgets::operate_ui] (a private function)
 pub fn update_scoreboard(
-    mut destroy_events: EventReader<AsteroidDestroy>,
+    mut destroy_events: MessageReader<AsteroidDestroy>,
     mut scoreboard: ResMut<Score>,
 ) {
     for _event in destroy_events.read() {

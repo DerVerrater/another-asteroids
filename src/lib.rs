@@ -3,8 +3,8 @@
 //! Compile-time configurables can be found in the [`config`] module.
 
 pub mod config;
-mod messages;
 mod machinery;
+mod messages;
 mod objects;
 mod physics;
 mod resources;
@@ -182,7 +182,7 @@ fn input_ship_shoot(
 
     // If the weapon is ready and the player presses the trigger,
     // spawn a bullet & reset the timer.
-    if weapon.finished() && keyboard_input.pressed(KeyCode::Space) {
+    if weapon.is_finished() && keyboard_input.pressed(KeyCode::Space) {
         weapon.reset();
         // Derive bullet velocity, add to the ship's velocity
         let bullet_vel = (ship_pos.rotation * Vec3::X).xy() * BULLET_SPEED;

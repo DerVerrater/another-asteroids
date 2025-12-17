@@ -6,7 +6,7 @@ license = "AGPL-3.0-only"
 
 [dependencies]
 bevy = "0.17"
-bevy-inspector-egui = "0.32"
+bevy-inspector-egui = "0.34"
 bevy_rapier2d = "0.32"
 rand = "0.9"
 

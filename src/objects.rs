@@ -3,6 +3,7 @@
 //! Asteroids, the player's ship, and such.
 
 use bevy::{
+    camera::visibility::Visibility,
     ecs::{
         component::Component,
         entity::Entity,
@@ -11,9 +12,9 @@ use bevy::{
         system::{Commands, Query, Res, ResMut, Single},
     },
     math::{Vec2, Vec3, Vec3Swizzles},
+    mesh::Mesh2d,
     prelude::{Deref, DerefMut},
-    render::{mesh::Mesh2d, view::Visibility},
-    sprite::MeshMaterial2d,
+    sprite_render::MeshMaterial2d,
     state::state::NextState,
     time::{Timer, TimerMode},
     transform::components::Transform,
@@ -23,8 +24,8 @@ use bevy_rapier2d::prelude::{ActiveCollisionTypes, ActiveEvents, Collider, Senso
 use crate::{
     AngularVelocity, GameAssets, GameState, Lives,
     config::{ASTEROID_LIFETIME, DEBRIS_LIFETIME, SHIP_FIRE_RATE},
-    messages::{AsteroidDestroy, BulletDestroy, ShipDestroy, SpawnAsteroid},
     machinery::{Lifetime, Sparkler},
+    messages::{AsteroidDestroy, BulletDestroy, ShipDestroy, SpawnAsteroid},
     physics::{Velocity, Wrapping},
 };
 

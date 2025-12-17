@@ -10,9 +10,9 @@ use bevy::{
         Vec2,
         primitives::{Circle, Triangle2d},
     },
+    mesh::Mesh,
     prelude::{Deref, DerefMut, Reflect, ReflectResource},
-    render::mesh::Mesh,
-    sprite::ColorMaterial,
+    sprite_render::ColorMaterial,
 };
 use bevy_inspector_egui::InspectorOptions;
 use bevy_inspector_egui::inspector_options::ReflectInspectorOptions;
@@ -42,12 +42,14 @@ impl From<Lives> for String {
     }
 }
 
+// TODO: consider switching this to use a u32 pair like the Window settings
+// thing now does.
 #[derive(Deref, DerefMut, Resource)]
 pub struct WorldSize(Vec2);
 
 impl Default for WorldSize {
     fn default() -> Self {
-        WorldSize(Vec2::new(WINDOW_SIZE.x, WINDOW_SIZE.y))
+        WorldSize(Vec2::new(WINDOW_SIZE.0 as f32, WINDOW_SIZE.1 as f32))
     }
 }
 

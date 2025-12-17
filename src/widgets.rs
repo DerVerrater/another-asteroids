@@ -124,7 +124,7 @@ fn button_bundle(text: &str) -> impl Bundle {
             margin: UiRect::all(Val::Px(5.0)),
             ..default()
         },
-        BorderColor(Color::BLACK),
+        BorderColor::all(Color::BLACK),
         BorderRadius::MAX,
         BackgroundColor(UI_BUTTON_NORMAL),
         children![(
@@ -152,7 +152,7 @@ fn spawn_menu(mut commands: Commands) {
             cmds.spawn((
                 Text::new("Robert's Bad Asteroids Game"),
                 TextFont::from_font_size(50.0),
-                TextLayout::new_with_justify(JustifyText::Center),
+                TextLayout::new_with_justify(Justify::Center),
                 TextShadow::default(),
             ));
             cmds.spawn((
@@ -247,7 +247,7 @@ fn animate_get_ready_widget(
     bar_segment.width = Val::Percent(100.0 * (1.0 - timer.fraction()));
 
     // If the timer has expired, change state to playing.
-    if timer.finished() {
+    if timer.is_finished() {
         game_state.set(GameState::Playing);
     }
 }
@@ -274,14 +274,14 @@ fn operate_buttons(
         (Changed<Interaction>, With<Button>),
     >,
     mut game_state: ResMut<NextState<GameState>>,
-    mut app_exit_events: EventWriter<AppExit>,
+    mut app_exit_events: MessageWriter<AppExit>,
 ) {
     // TODO: Better colors. These are taken from the example and they're ugly.
     for (interaction, mut color, mut border_color, menu_action) in &mut interactions {
         match *interaction {
             Interaction::Pressed => {
                 *color = UI_BUTTON_PRESSED.into();
-                border_color.0 = DARK_GRAY.into();
+                border_color.set_all(DARK_GRAY);
                 match menu_action {
                     ButtonMenuAction::ToMainMenu => {
                         game_state.set(GameState::TitleScreen);
@@ -296,11 +296,11 @@ fn operate_buttons(
             }
             Interaction::Hovered => {
                 *color = UI_BUTTON_HOVERED.into();
-                border_color.0 = WHITE.into();
+                border_color.set_all(WHITE);
             }
             Interaction::None => {
                 *color = UI_BUTTON_NORMAL.into();
-                border_color.0 = BLACK.into();
+                border_color.set_all(BLACK);
             }
         }
     }

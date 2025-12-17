@@ -3,7 +3,7 @@
 
 use bevy::color::Color;
 
-pub const WINDOW_SIZE: bevy::prelude::Vec2 = bevy::prelude::Vec2::new(800.0, 600.0);
+pub const WINDOW_SIZE: (u32, u32) = (800, 600);
 
 pub const UI_BUTTON_NORMAL: Color = Color::srgb(0.15, 0.15, 0.15); // Button color when it's just hanging out
 pub const UI_BUTTON_HOVERED: Color = Color::srgb(0.25, 0.25, 0.25); // ... when it's hovered
