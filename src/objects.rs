@@ -168,6 +168,12 @@ pub fn spawn_player(mut commands: Commands, game_assets: Res<GameAssets>) {
             Mesh2d(game_assets.ship().0),
             MeshMaterial2d(game_assets.ship().1),
             Transform::default().with_scale(Vec3::new(20.0, 20.0, 20.0)),
+            AudioPlayer::new(game_assets.ship_thruster_sound()),
+            PlaybackSettings {
+                mode: bevy::audio::PlaybackMode::Loop,
+                paused: true,
+                ..Default::default()
+            },
         ))
         .with_child((
             Mesh2d(game_assets.thruster_mesh()),

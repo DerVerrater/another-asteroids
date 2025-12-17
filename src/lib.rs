@@ -111,14 +111,28 @@ fn spawn_camera(mut commands: Commands) {
 /// Checks if "W" is pressed and increases velocity accordingly.
 fn input_ship_thruster(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut query: Query<(&mut physics::Velocity, &Transform, &mut Children), With<Ship>>,
+    mut query: Query<
+        (
+            &mut physics::Velocity,
+            &Transform,
+            Option<&mut AudioSink>,
+            &mut Children,
+        ),
+        With<Ship>,
+    >,
     mut commands: Commands,
     game_assets: Res<GameAssets>,
 ) {
     // TODO: Maybe change for a Single<Ship>> so this only runs for the one ship
     // buuut... that would silently do nothing if there are 0 or >1 ships, and
     // I might want to crash on purpose in that case.
-    let Ok((mut velocity, transform, children)) = query.single_mut() else {
+    //
+    // The AudioSink component doesn't exist for just one frame, forcing it to
+    // be an optional system parameter. I'm not sure if I want to guard it with
+    // a check like it does now, or finally switch to using a Single<...> query
+    // parameter. I would lose ship control if the sound sink didn't spawn, but
+    // that should be fine -- any time that fails, more has likely also failed.
+    let Ok((mut velocity, transform, audio, children)) = query.single_mut() else {
         let count = query.iter().count();
         panic!("There should be exactly one player ship! Instead, there seems to be {count}.");
     };
@@ -132,10 +146,16 @@ fn input_ship_thruster(
         commands
             .entity(*thrusters)
             .insert(MeshMaterial2d(game_assets.thruster_mat_active()));
+        if let Some(audio) = audio {
+            audio.play();
+        }
     } else {
         commands
             .entity(*thrusters)
             .insert(MeshMaterial2d(game_assets.thruster_mat_inactive()));
+        if let Some(audio) = audio {
+            audio.pause();
+        }
     }
 }
 
