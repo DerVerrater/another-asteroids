@@ -115,6 +115,7 @@ pub fn split_asteroids(
     mut respawn_events: MessageWriter<SpawnAsteroid>,
     mut commands: Commands,
     query: Query<(&Transform, &Asteroid, &Velocity)>,
+    game_assets: Res<GameAssets>,
 ) {
     for event in destroy_events.read() {
         if let Ok((transform, rock, velocity)) = query.get(event.0) {
@@ -137,6 +138,12 @@ pub fn split_asteroids(
             // Always despawn the asteroid. New ones (may) be spawned in it's
             // place, but this one is gone.
             commands.entity(event.0).despawn();
+
+            // Play a sound for the asteroid exploding
+            commands.spawn((
+                AudioPlayer::new(game_assets.asteroid_crack_sound()),
+                PlaybackSettings::DESPAWN,
+            ));
         }
     }
 }
