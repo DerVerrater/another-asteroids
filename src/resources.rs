@@ -58,7 +58,7 @@ impl Default for WorldSize {
 pub struct GameAssets {
     meshes: [Handle<Mesh>; 5],
     materials: [Handle<ColorMaterial>; 7],
-    sounds: [Handle<AudioSource>; 1],
+    sounds: [Handle<AudioSource>; 2],
 }
 
 impl GameAssets {
@@ -101,6 +101,10 @@ impl GameAssets {
     pub fn wreck_sound(&self) -> Handle<AudioSource> {
         self.sounds[0].clone()
     }
+
+    pub fn laser_sound(&self) -> Handle<AudioSource> {
+        self.sounds[1].clone()
+    }
 }
 
 impl FromWorld for GameAssets {
@@ -129,7 +133,10 @@ impl FromWorld for GameAssets {
             world_materials.add(BULLET_COLOR),
         ];
         let loader = world.resource_mut::<AssetServer>();
-        let sounds = [loader.load("explosionCrunch_004.ogg")];
+        let sounds = [
+            loader.load("explosionCrunch_004.ogg"),
+            loader.load("laserSmall_001.ogg")
+        ];
         GameAssets {
             meshes,
             materials,

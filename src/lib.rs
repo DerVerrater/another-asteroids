@@ -199,6 +199,8 @@ fn input_ship_shoot(
             MeshMaterial2d(game_assets.bullet().1),
             ship_pos.clone(), // clone ship transform
             Lifetime(Timer::from_seconds(BULLET_LIFETIME, TimerMode::Once)),
+            AudioPlayer::new(game_assets.laser_sound()),
+            PlaybackSettings::ONCE, // `Lifetime` already despawns the entity, so this doesn't need to
         ));
     }
 }
