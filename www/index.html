@@ -12,6 +12,7 @@
         margin: auto;
         padding: 0.5em;
       }
+      #prestart-controls,
       canvas {
         margin-top: 1em;
         margin-left: auto;
@@ -21,6 +22,26 @@
         outline-style: outset;
         border-radius: 8px;
         background-color: rgb(40%, 40%, 40%);
+      }
+      #prestart-controls {
+        width: 800px;
+        height: 600px;
+        text-align: center;
+        align-content: center;
+      }
+      button {
+        font-size: 20px;
+        text-shadow: 0.2em 0.2em 0px rgba(0, 0, 0, 75%);
+        padding: 1em;
+        border-radius: 2em;
+        border-style: solid;
+        border-color: black;
+        color: rgb(90%, 90%, 90%);
+        background-color: rgb(15%, 15%, 15%);
+      }
+      button:hover {
+        background-color: rgb(25%, 25%, 25%);
+        border-color: rgb(90%, 90%, 90%);
       }
       main {
         margin-left: auto;
@@ -41,9 +62,11 @@
   <h1>
     Robert's Bad Asteroids Game
   </h1>
-  <canvas id="game-canvas" width="800" height="600"></canvas>
-  <main>
+  <!-- <canvas id="game-canvas" width="800" height="600"></canvas> -->
+  <div id="prestart-controls">
     <button id="gameload-button">Load Game</button>
+  </div>
+  <main>
     <article>
       <h2>Description</h2>
       <p>
@@ -91,16 +114,24 @@
         <tr>
           <td>Program Version</td>
           <!-- This version text is completely unchecked. I'll need to do something about that. -->
-          <td><code>v0.5.0</code></td>
+          <td><code>v0.6.0-dev3</code></td>
         </tr>
       </table>
     </article>
   </main>
   <script type="module">
     import init from './asteroids.js'
-
-    document.getElementById("gameload-button").onclick = async function loadGame() {
+    
+    let button = document.getElementById("gameload-button");
+    button.onclick = async function loadGame() {
       console.log("Game Load button was pressed!");
+      let canvas = document.createElement("canvas");
+      // <canvas id="game-canvas" width="800" height="600"></canvas>
+      canvas.setAttribute("id", "game-canvas");
+      canvas.setAttribute("width", "800");
+      canvas.setAttribute("height", "600");
+      button.parentElement.replaceWith(canvas);
+
       let compressed = await fetch("./asteroids_bg.wasm.gz")
       let wasm_stream = compressed.body.pipeThrough(new DecompressionStream("gzip"))
       let blob = await new Response(wasm_stream).blob();
