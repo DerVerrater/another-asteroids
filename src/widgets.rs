@@ -180,9 +180,9 @@ fn spawn_get_ready(mut commands: Commands, mut timer: ResMut<ReadySetGoTimer>) {
             height: Val::Percent(30.),
             ..default()
         },
-        BackgroundColor(LIGHT_BLUE.into()),
+        BackgroundColor(Color::NONE),
         children![
-            (Text::new("Get Ready!"), TextColor(BLACK.into())),
+            (Text::new("Get Ready!"), TextColor(WHITE.into())),
             (
                 CountdownBar,
                 Node {
