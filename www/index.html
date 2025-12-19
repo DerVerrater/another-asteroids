@@ -41,8 +41,9 @@
   <h1>
     Robert's Bad Asteroids Game
   </h1>
-  <canvas id="game-canvas" width="1280" height="720"></canvas>
+  <canvas id="game-canvas" width="800" height="600"></canvas>
   <main>
+    <button id="gameload-button">Load Game</button>
     <article>
       <h2>Description</h2>
       <p>
@@ -98,15 +99,18 @@
   <script type="module">
     import init from './asteroids.js'
 
-    let compressed = await fetch("./asteroids_bg.wasm.gz")
-    let wasm_stream = compressed.body.pipeThrough(new DecompressionStream("gzip"))
-    let blob = await new Response(wasm_stream).blob();
-
-    init(await blob.arrayBuffer()).catch((error) => {
-      if (!error.message.startsWith("Using exceptions for control flow, don't mind me. This isn't actually an error!")) {
-        throw error;
-      }
-    });
+    document.getElementById("gameload-button").onclick = async function loadGame() {
+      console.log("Game Load button was pressed!");
+      let compressed = await fetch("./asteroids_bg.wasm.gz")
+      let wasm_stream = compressed.body.pipeThrough(new DecompressionStream("gzip"))
+      let blob = await new Response(wasm_stream).blob();
+      
+      init(await blob.arrayBuffer()).catch((error) => {
+        if (!error.message.startsWith("Using exceptions for control flow, don't mind me. This isn't actually an error!")) {
+          throw error;
+        }
+      });
+    }
   </script>
 </body>
 
