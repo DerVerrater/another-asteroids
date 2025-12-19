@@ -242,7 +242,7 @@ dependencies = [
 
 [[package]]
 name = "asteroids"
-version = "0.6.0-dev3"
+version = "0.6.0"
 dependencies = [
  "bevy",
  "bevy-inspector-egui",
