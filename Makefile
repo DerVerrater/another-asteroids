@@ -76,6 +76,8 @@ full-clean: clean
 # output into the web root. Only supports the "bundle-able" mode.
 install: web
 	install -dm0755 $(DESTDIR)
+	install -dm0755 $(DESTDIR)/assets
 	install -m0644 out/asteroids.js $(DESTDIR)/
 	install -m0644 out/asteroids_bg.wasm.gz $(DESTDIR)/
 	install -m0644 out/asteroids.html $(DESTDIR)/
+	install -m0644 $(ASSETS) $(DESTDIR)/assets/
