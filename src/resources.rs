@@ -9,7 +9,7 @@ use bevy::{
     },
     math::{
         Vec2,
-        primitives::{Circle, Triangle2d},
+        primitives::{Polyline2d, Segment2d, Triangle2d},
     },
     mesh::Mesh,
     prelude::{Deref, DerefMut, Reflect, ReflectResource},
@@ -19,8 +19,9 @@ use bevy_inspector_egui::InspectorOptions;
 use bevy_inspector_egui::inspector_options::ReflectInspectorOptions;
 
 use crate::{
-    ASTEROID_SMALL_COLOR, BULLET_COLOR, PLAYER_SHIP_COLOR, SHIP_THRUSTER_COLOR_ACTIVE,
-    SHIP_THRUSTER_COLOR_INACTIVE, config::WINDOW_SIZE,
+    ASTEROID_LARGE_COLOR, ASTEROID_MEDIUM_COLOR, ASTEROID_SMALL_COLOR, BULLET_COLOR,
+    PLAYER_SHIP_COLOR, SHIP_THRUSTER_COLOR_ACTIVE, SHIP_THRUSTER_COLOR_INACTIVE,
+    config::WINDOW_SIZE,
 };
 
 #[derive(InspectorOptions, Reflect, Resource, Debug, Deref, Clone, Copy)]
@@ -83,15 +84,15 @@ impl GameAssets {
     }
 
     pub fn asteroid_small(&self) -> (Handle<Mesh>, Handle<ColorMaterial>) {
-        (self.meshes[1].clone(), self.materials[1].clone())
+        (self.meshes[1].clone(), self.materials[3].clone())
     }
 
     pub fn asteroid_medium(&self) -> (Handle<Mesh>, Handle<ColorMaterial>) {
-        (self.meshes[2].clone(), self.materials[2].clone())
+        (self.meshes[2].clone(), self.materials[4].clone())
     }
 
     pub fn asteroid_large(&self) -> (Handle<Mesh>, Handle<ColorMaterial>) {
-        (self.meshes[3].clone(), self.materials[3].clone())
+        (self.meshes[3].clone(), self.materials[5].clone())
     }
 
     pub fn bullet(&self) -> (Handle<Mesh>, Handle<ColorMaterial>) {
@@ -124,10 +125,63 @@ impl FromWorld for GameAssets {
                 Vec2::new(-0.5, 0.45),
                 Vec2::new(-0.5, -0.45),
             )),
-            world_meshes.add(Circle::new(10.0)),
-            world_meshes.add(Circle::new(20.0)),
-            world_meshes.add(Circle::new(40.0)),
-            world_meshes.add(Circle::new(0.2)),
+            world_meshes.add(Polyline2d::new(
+                [
+                    Vec2::new(0.1, 0.0),
+                    Vec2::new(0.8, 0.2),
+                    Vec2::new(0.8, 0.3),
+                    Vec2::new(0.1, 1.0),
+                    Vec2::new(-0.5, 1.0),
+                    Vec2::new(-0.3, 0.3),
+                    Vec2::new(-1.0, 0.3),
+                    Vec2::new(-1.0, -0.2),
+                    Vec2::new(-0.5, -1.0),
+                    Vec2::new(0.1, -0.8),
+                    Vec2::new(0.5, -0.9),
+                    Vec2::new(1.0, -0.4),
+                    Vec2::new(0.1, 0.0),
+                ]
+                .into_iter()
+                .map(|vert| vert * 5.0),
+            )),
+            world_meshes.add(Polyline2d::new(
+                [
+                    Vec2::new(0.6, 0.3),
+                    Vec2::new(1.0, 0.6),
+                    Vec2::new(0.6, 1.0),
+                    Vec2::new(0.1, 0.8),
+                    Vec2::new(-0.4, 1.0),
+                    Vec2::new(-1.0, 0.6),
+                    Vec2::new(-0.8, -0.1),
+                    Vec2::new(-1.0, -0.5),
+                    Vec2::new(-0.4, -1.0),
+                    Vec2::new(-0.3, -0.7),
+                    Vec2::new(0.6, -1.0),
+                    Vec2::new(1.0, -0.3),
+                    Vec2::new(0.6, 0.3),
+                ]
+                .into_iter()
+                .map(|vert| vert * 10.0),
+            )),
+            world_meshes.add(Polyline2d::new(
+                [
+                    Vec2::new(1.0, -0.1),
+                    Vec2::new(1.0, 0.3),
+                    Vec2::new(0.4, 1.0),
+                    Vec2::new(-0.2, 1.0),
+                    Vec2::new(-0.9, 0.3),
+                    Vec2::new(-0.5, 0.1),
+                    Vec2::new(-0.9, -0.1),
+                    Vec2::new(-0.5, -1.0),
+                    Vec2::new(0.0, 0.0),
+                    Vec2::new(0.0, -1.0),
+                    Vec2::new(0.5, -1.0),
+                    Vec2::new(1.0, -0.1),
+                ]
+                .into_iter()
+                .map(|vert| vert * 20.0),
+            )),
+            world_meshes.add(Segment2d::new(Vec2::new(-0.1, 0.0), Vec2::new(0.1, 0.0))),
         ];
         let mut world_materials = world.resource_mut::<Assets<ColorMaterial>>();
         let materials = [
@@ -136,8 +190,8 @@ impl FromWorld for GameAssets {
             world_materials.add(SHIP_THRUSTER_COLOR_ACTIVE),
             world_materials.add(ASTEROID_SMALL_COLOR),
             // TODO: asteroid medium and large colors
-            world_materials.add(ASTEROID_SMALL_COLOR),
-            world_materials.add(ASTEROID_SMALL_COLOR),
+            world_materials.add(ASTEROID_MEDIUM_COLOR),
+            world_materials.add(ASTEROID_LARGE_COLOR),
             world_materials.add(BULLET_COLOR),
         ];
         let loader = world.resource_mut::<AssetServer>();

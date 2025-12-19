@@ -9,19 +9,21 @@ pub const UI_BUTTON_NORMAL: Color = Color::srgb(0.15, 0.15, 0.15); // Button col
 pub const UI_BUTTON_HOVERED: Color = Color::srgb(0.25, 0.25, 0.25); // ... when it's hovered
 pub const UI_BUTTON_PRESSED: Color = Color::srgb(0.55, 0.55, 0.55); // ... when it's pressed
 
-pub(crate) const BACKGROUND_COLOR: Color = Color::srgb(0.3, 0.3, 0.3);
+pub(crate) const BACKGROUND_COLOR: Color = Color::srgb(0.1, 0.1, 0.1);
 pub(crate) const PLAYER_SHIP_COLOR: Color = Color::srgb(1.0, 1.0, 1.0);
 pub(crate) const SHIP_THRUSTER_COLOR_ACTIVE: Color = Color::srgb(1.0, 0.2, 0.2);
 pub(crate) const SHIP_THRUSTER_COLOR_INACTIVE: Color = Color::srgb(0.5, 0.5, 0.5);
 pub(crate) const SHIP_FIRE_RATE: f32 = 3.0; // in bullets-per-second
-pub(crate) const ASTEROID_SMALL_COLOR: Color = Color::srgb(1.0, 0., 0.);
-pub(crate) const BULLET_COLOR: Color = Color::srgb(0.0, 0.1, 0.9);
+pub(crate) const ASTEROID_SMALL_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
+pub(crate) const ASTEROID_MEDIUM_COLOR: Color = Color::srgb(0.8, 0.8, 0.8);
+pub(crate) const ASTEROID_LARGE_COLOR: Color = Color::srgb(0.6, 0.6, 0.6);
+pub(crate) const BULLET_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
 // TODO: asteroid medium & large
 
-pub(crate) const SHIP_THRUST: f32 = 1.0;
+pub(crate) const SHIP_THRUST: f32 = 4.0;
 pub(crate) const SHIP_ROTATION: f32 = 4.0; // +/- rotation speed in... radians per frame
 
-pub(crate) const BULLET_SPEED: f32 = 150.0;
+pub(crate) const BULLET_SPEED: f32 = 500.0;
 pub(crate) const BULLET_LIFETIME: f32 = 2.0;
 
 pub(crate) const ASTEROID_LIFETIME: f32 = 40.0;

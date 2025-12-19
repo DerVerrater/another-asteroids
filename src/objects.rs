@@ -83,9 +83,9 @@ pub fn spawn_asteroid(
         };
 
         let collider_radius = match spawn.size {
-            AsteroidSize::Small => 10.0,
-            AsteroidSize::Medium => 20.0,
-            AsteroidSize::Large => 40.0,
+            AsteroidSize::Small => 5.0,
+            AsteroidSize::Medium => 10.0,
+            AsteroidSize::Large => 20.0,
         };
 
         commands.spawn((
