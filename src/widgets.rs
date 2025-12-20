@@ -8,7 +8,7 @@ use crate::{
 };
 
 use bevy::{
-    color::palettes::css::{BLACK, DARK_GRAY, GREEN, LIGHT_BLUE, RED, WHITE},
+    color::palettes::css::{BLACK, DARK_GRAY, GREEN, RED, WHITE},
     prelude::*,
 };
 
@@ -263,6 +263,7 @@ fn animate_get_ready_widget(
 /// on the HUD, this system would quit the game. The same will happen for
 /// returning to the title screen. This should be useful for making a pause
 /// menu, too.
+#[allow(clippy::type_complexity)]
 fn operate_buttons(
     mut interactions: Query<
         (

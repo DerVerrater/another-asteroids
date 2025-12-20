@@ -238,7 +238,7 @@ pub fn ship_impact_listener(
                 Sparkler::at_interval(0.15),
                 Mesh2d(game_assets.thruster_mesh()), // borrow the thruster mesh for now
                 MeshMaterial2d(game_assets.thruster_mat_active()), // ... and the active thruster material
-                player.0.clone(),                                  // clone the player transform
+                *player.0,                                         // clone the player transform
                 Velocity(vel),
             ));
         }
