@@ -111,23 +111,19 @@ pub fn collision_listener(
             if *one == *player {
                 if rocks.contains(*two) {
                     // player-asteroid collision
-                    dbg!("Writing ShipDestroy event");
                     ship_writer.write(messages::ShipDestroy);
                 } // else, we don't care
             } else if *two == *player && rocks.contains(*one) {
-                dbg!("Writing ShipDestroy event");
                 ship_writer.write(messages::ShipDestroy);
             }
 
             // Option 2: Bullet & Asteroid
             if bullets.contains(*one) {
                 if rocks.contains(*two) {
-                    dbg!("Writing AsteroidDestroy & BulletDestroy events");
                     asteroid_writer.write(messages::AsteroidDestroy(*two));
                     bullet_writer.write(messages::BulletDestroy(*one));
                 }
             } else if rocks.contains(*one) && bullets.contains(*two) {
-                dbg!("Writing AsteroidDestroy & BulletDestroy events");
                 asteroid_writer.write(messages::AsteroidDestroy(*one));
                 bullet_writer.write(messages::BulletDestroy(*two));
             }
