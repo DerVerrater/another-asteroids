@@ -3,17 +3,22 @@
 ## Do not use it if that isn't your goal!
 ##
 
+# # # Configuration Variables # # #
+#
 # Patch these to select a different build profile or target
 # The target shouldn't change any time soon. WASM64, I guess. Other targets
 # aren't aimed at the web, so you shouldn't be using this makefile.
 CARGO_TARGET := wasm32-unknown-unknown
 CARGO_PROFILE := tiny
 
+# # # Automatic Variables # # #
 SRC_DIR = ./src
 SRCS := $(wildcard $(SRC_DIR)/**)
 
 ASSET_SOURCE := $(wildcard assets/**)
 ASSETS := $(patsubst assets/%.ogg, out/assets/%.ogg, $(ASSET_SOURCE))
+
+CRATE_VERSION != sed -nre 's/^version = "(.*)"/\1/p' Cargo.toml
 
 .PHONY: clean full-clean tarball tarball-standalone web web-standalone
 
@@ -56,6 +61,7 @@ out/asteroids.js out/asteroids_bg.wasm.gz &: target/$(CARGO_TARGET)/$(CARGO_PROF
 out/index.html: www/index.html
 	cp -a $< $@
 	rm -f out/asteroids.html
+	sed -i -e "s/#CRATE_VERSION_PLACEHOLDER#/$(CRATE_VERSION)/" $@
 
 # Like `out/index.html`, but renames the page for use in a larger site.
 out/asteroids.html: www/index.html
