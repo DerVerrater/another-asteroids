@@ -18,7 +18,12 @@ jobs:
         with:
           components: rustfmt clippy
       - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libasound2-dev libudev-dev
+        run: >
+          sudo apt-get update &&
+          sudo apt-get install -y --no-install-recommends
+          libasound2-dev
+          libudev-dev
+          libwayland-dev
       - name : cargo generate-lockfile
         if: hashFiles('Cargo.lock') == ''
         run: cargo generate-lockfile
@@ -41,6 +46,6 @@ jobs:
           name: roberts-bad-asteroids-game
           path: target/release/asteroids
           if-no-files-found: 'error'
-          retention-days: 1
+          retention-days: 7
           compression-level: 9
           overwrite: true 
